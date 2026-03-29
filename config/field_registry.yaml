@@ -1,0 +1,409 @@
+# CFWrinklePINN — Field Registry
+# Single source of truth for all AniForm AFR output fields.
+#
+# STATUS VALUES:
+#   confirmed  — physical meaning verified via ReadAFResult(silent=False) header name
+#   excluded   — identified but not used; reason in notes
+#
+# USE FLAGS (set after WP4 feature engineering design):
+#   use_as_feature: true | false | pending
+#   use_as_target:  true | false
+#
+# LOCKED after WP1 gate passes. Subsequent changes require version bump in notes.
+# NEVER reorder entries. NEVER delete entries — set status: excluded instead.
+#
+# Last updated: 2026-03-29 (complete rewrite from ReadAFResult silent=False headers)
+# All field names confirmed from actual binary headers — previous draft was mostly wrong.
+
+fields:
+
+  # ── Kinematic fields ────────────────────────────────────────────────────────
+
+  - afr_id: 40
+    sub_id: 1
+    name: displacement
+    header_name: "Displacement"
+    res_type: 20          # VectorT: 3 floats
+    components: [dx, dy, dz]
+    units: mm
+    coordinate_frame: global
+    status: confirmed
+    physical_meaning: Nodal displacement vector from reference configuration
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "dz variance used in WP1.5 wrinkle detection. Fine ~75k nodes (A), ~40k nodes (B)."
+
+  - afr_id: 42
+    sub_id: 1
+    name: rotation
+    header_name: "Rotation"
+    res_type: 20          # VectorT: 3 floats
+    components: [rx, ry, rz]
+    units: rad
+    coordinate_frame: global
+    status: confirmed
+    physical_meaning: Rigid body tool rotation DOF — near-zero on ply nodes
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: false
+    use_as_target: false
+    notes: "Previously assumed to be velocity. Near-zero on ply groups — tool DOF field. Exclude from features."
+
+  - afr_id: 44
+    sub_id: 1
+    name: temperature
+    header_name: "Temperature"
+    res_type: 20          # VectorT: 3 floats (multi-DOF temperature)
+    components: [T1, T2, T3]
+    units: deg_C
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Nodal temperature (multi-DOF — main + surface temperatures)
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "Previously assumed to be acceleration. Header confirms 'Temperature'. Thermal history drives crystallinity and viscosity."
+
+  # ── Temperature surface fields ──────────────────────────────────────────────
+
+  - afr_id: 48
+    sub_id: 1
+    name: temperature_1
+    header_name: "Temperature 1"
+    res_type: 10          # ScalarT: 1 float
+    components: [T_top]
+    units: deg_C
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Second DOF temperature — likely top surface of shell element
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: pending
+    use_as_target: false
+    notes: "Previously assumed to be contact pressure. Nearly identical to field 44 on ply groups; zero on tool groups."
+
+  - afr_id: 49
+    sub_id: 1
+    name: temperature_2
+    header_name: "Temperature 2"
+    res_type: 10          # ScalarT: 1 float
+    components: [T_bot]
+    units: deg_C
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Third DOF temperature — likely bottom surface of shell element
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: pending
+    use_as_target: false
+    notes: "Previously assumed to be contact status. Nearly identical to field 44 on ply groups; zero on tool groups."
+
+  # ── Strain / geometric fields ───────────────────────────────────────────────
+
+  - afr_id: 102
+    sub_id: 1
+    name: green_lagrange_strain
+    header_name: "Green-Lagrange strain"
+    res_type: 31          # STensorPSST: 3 floats
+    components: [E11, E22, E12]
+    units: dimensionless
+    coordinate_frame: local
+    status: confirmed
+    physical_meaning: Green-Lagrange strain tensor components
+    groups_A: [6, 7, 10, 11]
+    groups_B: [4, 5, 8, 9, 12, 13]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Previously assumed to be thickness. Header confirms 'Green-Lagrange strain'.
+      Values near-zero at final forming (E11~0, E12~0.00075) — dominant viscous, not elastic.
+      Uses bending sub-element groups (7,11 for A; 5,9,13 for B).
+
+  - afr_id: 105
+    sub_id: 1
+    name: thickness
+    header_name: "Thickness"
+    res_type: 10          # ScalarT: 1 float
+    components: [t]
+    units: mm
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Ply thickness — initial 0.300mm, evolves during forming
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Previously assumed to be fiber angle. Header confirms 'Thickness'.
+      t=0: 0.300mm uniform. t_final: mean 0.312mm (slight thickening).
+      Thinning/thickening is a forming quality indicator.
+
+  - afr_id: 106
+    sub_id: 1
+    name: eq_shear_rate
+    header_name: "Eq shear rate"
+    res_type: 10          # ScalarT: 1 float
+    components: [gamma_dot_eq]
+    units: 1/s
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Equivalent shear rate — viscous flow rate during forming
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "Previously assumed to be shear angle. Header confirms 'Eq shear rate'. Important for Twintex (Batch B) forming characterization."
+
+  # ── Stress fields ───────────────────────────────────────────────────────────
+
+  - afr_id: 200
+    sub_id: 1
+    name: stress
+    header_name: "Stress"
+    res_type: 31          # STensorPSST: 3 floats
+    components: [s11, s22, s12]
+    units: MPa
+    coordinate_frame: global    # resolved: s11/s22 ratio = 1.1 (medium confidence)
+    status: confirmed
+    physical_meaning: Cauchy stress tensor components
+    groups_A: [6, 7, 10, 11]
+    groups_B: [4, 5, 8, 9, 12, 13]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Previously assumed to be curvature tensor. Header confirms 'Stress'.
+      Values very small: s11=-0.203, s22=-0.176, s12=-0.001 MPa at final — viscous forming stress.
+      Coordinate frame still unresolved: if fiber-frame, expect s11 >> s22 for 0deg ply.
+      Current values suggest global or near-isotropic viscous stress.
+      Uses bending sub-element groups.
+
+  # ── Fiber direction fields ──────────────────────────────────────────────────
+
+  - afr_id: 203
+    sub_id: 1
+    name: fiber_direction_1
+    header_name: "Fiber direction 1"
+    res_type: 20          # VectorT: 3 floats
+    components: [fd1_x, fd1_y, fd1_z]
+    units: dimensionless
+    coordinate_frame: global
+    status: confirmed
+    physical_meaning: Unit vector of fiber family 1 direction — evolves with deformation
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Previously assumed to be fiber-frame strains (STensorPSST). Header confirms 'Fiber direction 1'.
+      t=0: [1.000, 0.000, 0.000] for 0deg ply. t_final: [0.948, 0.001, 0.004].
+      Pure unit vector that tracks material fiber orientation through deformation.
+
+  - afr_id: 203
+    sub_id: 2
+    name: fiber_direction_2
+    header_name: "Fiber direction 2"
+    res_type: 20          # VectorT: 3 floats
+    components: [fd2_x, fd2_y, fd2_z]
+    units: dimensionless
+    coordinate_frame: global
+    status: confirmed
+    physical_meaning: Unit vector of fiber family 2 direction (weft direction for woven)
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Sub_id 2 = fiber family 2, not a duplicate frame. For UD (Batch A) both families exist but
+      family 2 may be less meaningful. For Twintex (Batch B) this is the weft fiber family.
+
+  # ── Shear angle field ───────────────────────────────────────────────────────
+
+  - afr_id: 204
+    sub_id: 1
+    name: shear_angle_f1_f2
+    header_name: "Shear angle f1_f2"
+    res_type: 10          # ScalarT: 1 float
+    components: [gamma_f1f2]
+    units: deg
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Shear angle between fiber family 1 and fiber family 2
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: >
+      Previously assumed to be bending strains. Header confirms 'Shear angle f1_f2'.
+      KEY feature for woven wrinkle prediction (Batch B Twintex). Locking angle ~54deg for 2x2 twill.
+      Near-zero for UD (Batch A) since fiber families are orthogonal by construction.
+
+  # ── Fiber strain fields ─────────────────────────────────────────────────────
+
+  - afr_id: 205
+    sub_id: 1
+    name: fiber_strain_1
+    header_name: "Fiber strain 1"
+    res_type: 10          # ScalarT: 1 float
+    components: [eps_f1]
+    units: dimensionless
+    coordinate_frame: fiber
+    status: confirmed
+    physical_meaning: Scalar stretch ratio along fiber family 1
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "Previously assumed to be membrane strains (3-component tensor). Header confirms scalar 'Fiber strain 1'."
+
+  - afr_id: 205
+    sub_id: 2
+    name: fiber_strain_2
+    header_name: "Fiber strain 2"
+    res_type: 10          # ScalarT: 1 float
+    components: [eps_f2]
+    units: dimensionless
+    coordinate_frame: fiber
+    status: confirmed
+    physical_meaning: Scalar stretch ratio along fiber family 2
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "Sub_id 2 = fiber family 2 stretch ratio. For woven (Batch B), the weft fiber strain."
+
+  # ── Fiber stress fields (PRIMARY WRINKLE PRECURSORS) ────────────────────────
+
+  - afr_id: 206
+    sub_id: 1
+    name: fiber_stress_1
+    header_name: "Fiber stress 1"
+    res_type: 10          # ScalarT: 1 float
+    components: [sigma_f1]
+    units: MPa
+    coordinate_frame: fiber
+    status: confirmed
+    physical_meaning: Scalar stress along fiber family 1 — PRIMARY wrinkle precursor
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: true   # compressive fraction is a wrinkle severity metric
+    notes: >
+      Previously assumed to be total strains (3-component tensor). Header confirms scalar 'Fiber stress 1'.
+      PRIMARY WRINKLE PRECURSOR: goes from 0% compressive to 80% compressive during forming.
+      Compressive fiber stress → fiber buckling → wrinkling.
+
+  - afr_id: 206
+    sub_id: 2
+    name: fiber_stress_2
+    header_name: "Fiber stress 2"
+    res_type: 10          # ScalarT: 1 float
+    components: [sigma_f2]
+    units: MPa
+    coordinate_frame: fiber
+    status: confirmed
+    physical_meaning: Scalar stress along fiber family 2
+    groups_A: [6, 10]
+    groups_B: [4, 8, 12]
+    available_batches: [A, B]
+    use_as_feature: true
+    use_as_target: false
+    notes: "Sub_id 2 = fiber family 2 stress. For woven (Batch B), the weft fiber stress."
+
+  # ── Crystallinity (Batch A only) ────────────────────────────────────────────
+
+  - afr_id: 214
+    sub_id: 1
+    name: rel_crystallinity_nakamura
+    header_name: "Rel. crystallinity (Nakamura)"
+    res_type: 10          # ScalarT: 1 float
+    components: [alpha]
+    units: dimensionless   # [0, 1]
+    coordinate_frame: null
+    status: confirmed
+    physical_meaning: Nakamura relative crystallinity alpha in [0,1]
+    groups_A: [6, 10]
+    groups_B: null         # field not present in Batch B
+    available_batches: [A]
+    use_as_feature: pending   # Batch A only — cannot use in cross-batch training without masking
+    use_as_target: false
+    notes: >
+      Previously was the 'unknown' field — header confirms 'Rel. crystallinity (Nakamura)'.
+      alpha=0 at forming temp, rises on cooling. Batch A only (not in Batch B).
+      Cannot be a shared feature across batches without zero-padding or masking.
+
+  # ── Contact / tool fields (EXCLUDED) ────────────────────────────────────────
+
+  - afr_id: 302
+    sub_id: 1
+    name: penetration_depth
+    header_name: "Penetration depth"
+    res_type: 10          # ScalarT: 1 float
+    components: [d_pen]
+    units: mm
+    coordinate_frame: null
+    status: excluded
+    physical_meaning: Contact penetration depth between ply and tool
+    groups_A: [8, 9, 13]
+    groups_B: [6, 7, 11, 15]
+    available_batches: [A, B]
+    use_as_feature: false
+    use_as_target: false
+    notes: >
+      Previously assumed to be stress tensor (STensorPSST). Header confirms scalar 'Penetration depth'.
+      CONTACT field — lives in contact groups, not ply groups. Exclude from ply features.
+
+  - afr_id: 304
+    sub_id: 1
+    name: slip_path_length
+    header_name: "Slip path length"
+    res_type: 10          # ScalarT: 1 float
+    components: [l_slip]
+    units: mm
+    coordinate_frame: null
+    status: excluded
+    physical_meaning: Cumulative slip path length at contact interface
+    groups_A: [8, 9, 13]
+    groups_B: [6, 7, 11, 15]
+    available_batches: [A, B]
+    use_as_feature: false
+    use_as_target: false
+    notes: >
+      Previously assumed to be von Mises stress. Header confirms 'Slip path length'.
+      0 at t=0, max 3.07mm at contact nodes. CONTACT field — exclude from ply features.
+
+  - afr_id: 401
+    sub_id: 1
+    name: traction
+    header_name: "Traction"
+    res_type: 20          # VectorT: 3 floats
+    components: [tx, ty, tz]
+    units: MPa
+    coordinate_frame: null
+    status: excluded
+    physical_meaning: Contact traction vector — ALL ZEROS in both batches
+    groups_A: [8, 9, 13]
+    groups_B: [6, 7, 11, 15]
+    available_batches: [A, B]
+    use_as_feature: false
+    use_as_target: false
+    notes: >
+      Previously assumed to be Nakamura crystallinity. Header confirms 'Traction'.
+      All values are zero — contact artifact with no data. Exclude.
