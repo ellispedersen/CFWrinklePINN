@@ -1,0 +1,100 @@
+# CFWrinklePINN — Pipeline Configuration
+# Single source of truth for all paths and batch parameters.
+# Never hardcode paths in module code — always load this file.
+
+# ── Raw data roots (read-only, do not copy) ──────────────────────────────────
+data:
+  batch_a_root: "C:/Users/ellis/Documents/VS Code/CFWrinklePredict2/data/aniform_raw"
+  batch_b_root: "C:/Users/ellis/Documents/VS Code/CFWrinklePredict2/data/simulation_batch_271125"
+
+# ── Output dataset (written in WP2/3) ────────────────────────────────────────
+  dataset_h5: "C:/Users/ellis/Documents/VS Code/CFWrinklePINN/data/dataset.h5"
+
+# ── Reports directory ─────────────────────────────────────────────────────────
+reports_dir: "C:/Users/ellis/Documents/VS Code/CFWrinklePINN/reports"
+
+# ── Batch definitions ─────────────────────────────────────────────────────────
+batches:
+  A:
+    label: "UD"
+    material: "UD_thermoplastic"
+    folder_glob: "geom 0_*.Results"
+    ply_groups: [6, 10]
+    bending_groups: [6, 7, 10, 11]    # STensorPSST fields (GL strain, stress)
+    contact_groups: [8, 9, 13]        # penetration depth, slip path, traction
+    n_plies: 2
+    ply_orientations_deg: [0.0, 90.0]
+    fine_mesh_min_kb: 5000     # Part.section 1.1.msh size threshold
+    fine_mesh_min_nodes: 30000 # node count from displacement field
+    expected_afr_count: 20
+    afr_dir_subpath: "results"
+
+  B:
+    label: "Twintex"
+    material: "Twintex_2x2_twill"
+    folder_glob: "mold set *.Results"
+    ply_groups: [4, 8, 12]
+    bending_groups: [4, 5, 8, 9, 12, 13]   # STensorPSST fields (GL strain, stress)
+    contact_groups: [6, 7, 11, 15]          # penetration depth, slip path, traction
+    n_plies: 3
+    ply_orientations_deg: null   # varies per mold set — read from .afi
+    fine_mesh_min_kb: 2000
+    fine_mesh_min_nodes: 20000   # node count from displacement field
+    expected_afr_count: 19      # no model_214_1.afr
+    afr_dir_subpath: "results"
+
+# ── Field registry ────────────────────────────────────────────────────────────
+field_registry: "C:/Users/ellis/Documents/VS Code/CFWrinklePINN/config/field_registry.yaml"
+
+# ── WP1 survey output files ───────────────────────────────────────────────────
+wp1:
+  afr_field_survey:     "reports/afr_field_survey.json"
+  input_param_registry: "reports/input_param_registry.json"
+  force_stroke_summary: "reports/force_stroke_summary.json"
+  field_survey_detail:  "reports/field_survey_detail.json"
+  wrinkle_registry:     "reports/wrinkle_onset_registry.json"
+  gate_doc:             "reports/WP1_gate.md"
+
+# ── Mesh identification ───────────────────────────────────────────────────────
+mesh:
+  ply_mesh_filename: "Part.section 1.1.msh"   # used for coarse/fine size comparison
+  afm_filename: "model.afm"                    # in run root (NOT results/)
+  afs_filename: "results/model.afs"
+  track_filename: "results/model.track.txt"    # fallback: model.track.txt in run root
+
+# ── Wrinkle detection (WP1.5) ────────────────────────────────────────────────
+wrinkle_detection:
+  method: "oop_displacement_variance"   # out-of-plane displacement variance
+  field_id: 40                          # displacement AFR (dx,dy,dz)
+  displacement_component: 2             # index into [dx,dy,dz] — dz = out-of-plane
+  variance_threshold: 0.01              # mm² — spatial variance above this = wrinkled
+  min_affected_fraction: 0.05           # at least 5% of nodes must exceed threshold
+  ply_group_for_detection_A: 6           # Batch A: ply 0 = group 6
+  ply_group_for_detection_B: 4           # Batch B: ply 0 = group 4
+
+# ── Spatial correspondence (WP3) ─────────────────────────────────────────────
+correspondence:
+  method: "kdtree_nearest"
+  k: 1
+
+# ── HDF5 Dataset Configuration (WP2) ──────────────────────────────────────────
+dataset:
+  hdf5_path: data/cfwrinkle_dataset.h5
+  schema_version: "1.0"
+  chunk_time_dim: 1
+  chunk_node_dim: 4096
+  compression: lzf
+  cv_n_folds: 5
+  cv_random_seed: 42
+  compound_severity_weights:
+    fiber_stress: 0.50
+    dz_variance: 0.35
+    shear_angle: 0.15
+  comp_frac_deadband_MPa: -0.05
+  comp_frac_severity_scale: 0.50
+  dz_var_severity_scale:
+    A: 10.0
+    B: 0.40
+  shear_angle_severity_scale:
+    A: 90.0
+    B: 45.0
