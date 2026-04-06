@@ -27,7 +27,7 @@
 Full Codex-ready implementation instructions are in:
 
 ```
-C:\Users\ellis\Documents\VS Code\CF PInn Rebuild Context\
+C:\Users\ellis\Documents\VS Code\CFWrinklePINN\CF PInn Rebuild Context
   INDEX.md                    ← Master index, dataset facts, HDF5 schema
   WP6_model_architecture.md   ← GNN design, dataset interface, loss — implement first
   WP7_training_evaluation.md  ← Training loop, progressive tests, visualisation, inference

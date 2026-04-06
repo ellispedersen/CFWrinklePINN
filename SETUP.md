@@ -47,14 +47,108 @@ pip install pytest pytest-cov ruff
 # pip install --no-cache-dir --index-url https://repo.radeon.com/rocm/windows/rocm-rel-7.2/ torch
 ```
 
+Use a clean venv (no `--system-site-packages`) so ROCm CLI tools resolve from the active environment.
+
 ## GPU environment (AMD RX 7900 XT)
 
 ```powershell
-$env:HIP_VISIBLE_DEVICES = "1"
-$env:HSA_OVERRIDE_GFX_VERSION = "11.0.0"
 $env:TORCH_BLAS_PREFER_HIPBLASLT = "1"
 $env:PYTORCH_TUNABLE_OP_ENABLED = "1"
+$env:PATH = "C:\Users\ellis\AppData\Local\Programs\Python\Python312\Scripts;$env:PATH"
 ```
+
+Avoid forcing `HSA_OVERRIDE_GFX_VERSION` and `PYTORCH_ROCM_ARCH` unless AMD docs explicitly require it for your driver/toolchain combination.
+
+## Radeon AI bundle PyTorch (recommended Windows path)
+
+If Radeon AI bundle PyTorch is already installed globally for Python 3.12, use:
+
+```powershell
+cd "C:\Users\ellis\Documents\VS Code\CFWrinklePINN"
+py -3.12 -m venv --system-site-packages .venv
+.\activate-amd-bundle.ps1
+```
+
+This keeps the project isolated while reusing the installed AMD bundle distribution.
+
+## WSL2 ROCm path (recommended for training stability)
+
+When native Windows ROCm training is unstable, use WSL2 with a Linux venv stored on the Linux filesystem (not `/mnt/c/...`).
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_setup_env.sh"
+```
+
+This creates/updates:
+- venv: `/home/ellis/venvs/cfwrinkle`
+- PyTorch ROCm wheels (default: ROCm 7.1 index)
+- project requirements + `pandas`
+- a quick torch/HIP probe printout
+
+`wsl_setup_env.sh` and `wsl_gpu_smoke.sh` also apply a runtime-link workaround by default:
+
+```bash
+export ROCM_RUNTIME_LIB=/opt/rocm-7.2.0/lib/libamdhip64.so
+```
+
+On some WSL driver/runtime combinations, this is required for PyTorch to enumerate the GPU (`torch.cuda.is_available()`), even when `rocminfo` already sees `gfx1100`.
+
+Run the project test suite from WSL:
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "source /home/ellis/venvs/cfwrinkle/bin/activate && export PYTHONPATH=\"$(pwd)\" && python -m pytest tests/ -q"
+```
+
+Run one-epoch GPU smoke training from WSL:
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_gpu_smoke.sh"
+```
+
+`wsl_gpu_smoke.sh` defaults to `SMOKE_HIDDEN_DIM=16` to reduce OOM risk on busy desktop GPUs. Override if needed:
+
+```bash
+SMOKE_HIDDEN_DIM=32 ./wsl_gpu_smoke.sh
+```
+
+Run the progressive WP7 training gate (with resource preflight before any training starts):
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_progressive_suite.sh --preflight-only"
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_progressive_suite.sh --max-level 3"
+```
+
+Default preflight thresholds are:
+- CPU cores >= 8
+- total RAM >= 12 GB
+- available RAM >= 6 GB
+- swap >= 8 GB
+- free disk >= 40 GB
+- free GPU memory >= 6 GB (`>= 10 GB` for full CV)
+
+Override thresholds per run if needed:
+
+```bash
+MIN_MEM_TOTAL_GB=16 MIN_GPU_FREE_GB=8 ./wsl_progressive_suite.sh --max-level 2
+```
+
+If preflight fails due WSL resource caps, set `C:\Users\ellis\.wslconfig` and restart WSL:
+
+```ini
+[wsl2]
+memory=24GB
+processors=12
+swap=16GB
+```
+
+```powershell
+wsl --shutdown
+```
+
+If `rocminfo` sees `gfx1100` but PyTorch still reports `cuda=False`, this is a host/runtime compatibility issue (ROCDXG + driver/toolchain combo), not a project code issue. In that case:
+- verify host Radeon driver/ROCDXG support matrix alignment for your WSL target stack,
+- keep using native Windows Radeon AI bundle path temporarily for GPU work,
+- or run CPU smoke in WSL until the host stack is aligned.
 
 ## What gets copied from CFWrinklePredict2
 

@@ -109,10 +109,19 @@ def _check_increment_counts(h5: h5py.File) -> tuple[bool, str]:
         for sim_id in sim_ids:
             sim = h5[f"simulations/{sim_id}"]
             fine_run_dir = Path(sim.attrs["fine_run_dir"])
+            ply_groups = [int(x) for x in sim.attrs["ply_groups"]]
             afs_incr, _, _ = read_increment_times(fine_run_dir)
+            disp, field_incr = read_field_all_increments(
+                fine_run_dir / "results" / "model_40_1.afr", 40, 1, ply_groups
+            )
+            if disp.shape[0] == 0 or not field_incr:
+                return False, f"{sim_id} displacement field increments missing"
+            afs_set = {int(i) for i in afs_incr.tolist()}
+            aligned = [int(i) for i in field_incr if int(i) in afs_set]
+            expected = len(aligned) if aligned else len(field_incr)
             h5_incr = sim["fine/increments"][:]
-            if len(afs_incr) != len(h5_incr):
-                return False, f"{sim_id} increment mismatch h5={len(h5_incr)} afs={len(afs_incr)}"
+            if expected != len(h5_incr):
+                return False, f"{sim_id} increment mismatch h5={len(h5_incr)} expected={expected}"
     return True, "ok"
 
 

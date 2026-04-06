@@ -223,11 +223,48 @@ def read_reference_mesh(run_dir: Path, groups: list[int]) -> tuple[np.ndarray, n
     if not all_elems:
         return xyz, np.zeros((0, 3), dtype=np.int32)
 
-    elems_cat = np.concatenate(all_elems, axis=0)
-    conn = elems_cat[:, 1:4].astype(np.int64)
-    mapped = np.array([[id_to_zero.get(int(n), -1) for n in tri] for tri in conn], dtype=np.int32)
-    mapped = mapped[(mapped >= 0).all(axis=1)]
-    return xyz, mapped
+    mapped_parts: list[np.ndarray] = []
+    n_total = 0
+    n_discarded = 0
+    for grp in groups:
+        if grp not in elems_by_group or grp not in nodes_by_group:
+            continue
+        grp_nodes = nodes_by_group[grp]
+        grp_node_ids = grp_nodes[:, 0].astype(np.int64)
+        grp_local0_to_global = np.array([id_to_zero[int(nid)] for nid in grp_node_ids], dtype=np.int32)
+
+        grp_conn = elems_by_group[grp][:, 1:4].astype(np.int64)
+        n_total += int(grp_conn.shape[0])
+        if grp_conn.size == 0:
+            continue
+
+        cmin = int(grp_conn.min())
+        cmax = int(grp_conn.max())
+        n_grp_nodes = int(grp_nodes.shape[0])
+
+        # AniForm .afm connectivity is typically local node indexing per group.
+        if cmin >= 0 and cmax < n_grp_nodes:
+            mapped_grp = grp_local0_to_global[grp_conn]
+            mapped_parts.append(mapped_grp.astype(np.int32))
+            continue
+        if cmin >= 1 and cmax <= n_grp_nodes:
+            mapped_grp = grp_local0_to_global[grp_conn - 1]
+            mapped_parts.append(mapped_grp.astype(np.int32))
+            continue
+
+        # Fallback for connectivity encoded as global node IDs.
+        mapped_grp = np.array([[id_to_zero.get(int(n), -1) for n in tri] for tri in grp_conn], dtype=np.int32)
+        keep_mask = (mapped_grp >= 0).all(axis=1)
+        n_discarded += int((~keep_mask).sum())
+        kept_grp = mapped_grp[keep_mask]
+        if kept_grp.size:
+            mapped_parts.append(kept_grp)
+
+    kept = np.concatenate(mapped_parts, axis=0) if mapped_parts else np.zeros((0, 3), dtype=np.int32)
+    n_kept = int(kept.shape[0])
+    n_discarded += max(0, n_total - n_kept - n_discarded)
+    print(f"[mesh] {run_dir.name}: Stored {n_kept}/{n_total} elements ({n_discarded} had out-of-group nodes)")
+    return xyz, kept
 
 
 def read_field_all_increments(
@@ -263,7 +300,14 @@ def read_field_all_increments(
             _, first_idx = np.unique(node_idx, return_index=True)
             vals = vals[first_idx]
         else:
-            vals = cat
+            # ReadAFResult prepends a zero-padding column when
+            # indices_included=False.  Strip it so downstream shapes
+            # match the expected component counts (3 for VectorT /
+            # STensorPSST, 1 for ScalarT).
+            if cat.shape[1] > 1 and np.all(cat[:, 0] == 0):
+                vals = cat[:, 1:]
+            else:
+                vals = cat
         frames.append(vals.astype(np.float32))
 
     if not frames:
@@ -308,19 +352,34 @@ def _severity_from_components(batch: str, comp_frac: np.ndarray, dz_var: np.ndar
 def compute_derived(
     batch: str, displacement: np.ndarray, fiber_stress_1: np.ndarray, shear_angle: np.ndarray
 ) -> dict[str, np.ndarray]:
-    if displacement.ndim == 3:
-        dz = displacement[:, :, 2]
+    n_incr = displacement.shape[0]
+
+    # dz is always the LAST component (handles both 3-col and legacy 4-col layouts)
+    if displacement.ndim == 3 and displacement.shape[2] >= 3:
+        dz = displacement[:, :, -1]
     else:
-        dz = np.zeros((displacement.shape[0], 0), dtype=np.float32)
-    if fiber_stress_1.ndim == 2:
-        comp_frac = (fiber_stress_1 < -0.05).mean(axis=1).astype(np.float32)
+        dz = np.zeros((n_incr, 0), dtype=np.float32)
+
+    # fiber_stress_1: scalar field — may be (n_incr, n_nodes) or (n_incr, n_nodes, 2) legacy
+    if fiber_stress_1.ndim == 3:
+        fs = fiber_stress_1[:, :, -1]  # last col = actual value
+    elif fiber_stress_1.ndim == 2:
+        fs = fiber_stress_1
     else:
-        comp_frac = np.zeros((displacement.shape[0],), dtype=np.float32)
-    dz_variance = np.var(dz, axis=1).astype(np.float32) if dz.size else np.zeros((displacement.shape[0],), dtype=np.float32)
-    if shear_angle.ndim == 2 and shear_angle.shape[1] > 0:
-        max_shear = np.max(shear_angle, axis=1).astype(np.float32)
+        fs = np.zeros((n_incr, 0), dtype=np.float32)
+    comp_frac = (fs < -0.05).mean(axis=1).astype(np.float32) if fs.size else np.zeros((n_incr,), dtype=np.float32)
+
+    dz_variance = np.var(dz, axis=1).astype(np.float32) if dz.size else np.zeros((n_incr,), dtype=np.float32)
+
+    # shear_angle: scalar — may be (n_incr, n_nodes) or (n_incr, n_nodes, 2) legacy
+    if shear_angle.ndim == 3:
+        sa = shear_angle[:, :, -1]
+    elif shear_angle.ndim == 2:
+        sa = shear_angle
     else:
-        max_shear = np.zeros((displacement.shape[0],), dtype=np.float32)
+        sa = np.zeros((n_incr, 0), dtype=np.float32)
+    max_shear = np.max(np.abs(sa), axis=1).astype(np.float32) if sa.size else np.zeros((n_incr,), dtype=np.float32)
+
     severity = _severity_from_components(batch, comp_frac, dz_variance, max_shear)
     return {"comp_frac_f1": comp_frac, "dz_variance": dz_variance, "severity": severity}
 
@@ -455,20 +514,56 @@ def _collect_level_data(rec: SimRecord, run_dir: Path | None, batch: str) -> dic
     incr_numbers, times_s, stroke_frac = read_increment_times(run_dir)
 
     fields: dict[str, np.ndarray | None] = {}
+    field_increments: dict[str, list[int]] = {}
     for field_name, (afr_id, sub_id, _shape_suffix, groups_key) in FIELD_DEFS.items():
         if field_name == "crystallinity" and batch == "B":
             fields[field_name] = None
+            field_increments[field_name] = []
             continue
         groups = rec.bending_groups if groups_key == "bending" else rec.ply_groups
         afr_path = afr_dir / f"model_{afr_id}_{sub_id}.afr"
         data, incs = read_field_all_increments(afr_path, afr_id, sub_id, groups)
-        if data.shape[0] and len(incs):
+        fields[field_name] = data
+        field_increments[field_name] = [int(i) for i in incs]
+
+    ref_increments = field_increments.get("displacement", [])
+    if not ref_increments:
+        for incs in field_increments.values():
+            if incs:
+                ref_increments = incs
+                break
+
+    if ref_increments:
+        afs_by_incr = {int(i): j for j, i in enumerate(incr_numbers.tolist())}
+        aligned_incr = [i for i in ref_increments if i in afs_by_incr]
+        if not aligned_incr:
+            aligned_incr = ref_increments
+        pick_time = [afs_by_incr[i] for i in aligned_incr if i in afs_by_incr]
+        if pick_time:
+            incr_numbers = incr_numbers[pick_time]
+            times_s = times_s[pick_time]
+            stroke_frac = stroke_frac[pick_time]
+        else:
+            n = len(aligned_incr)
+            incr_numbers = np.asarray(aligned_incr, dtype=np.int32)
+            times_s = np.zeros((n,), dtype=np.float32)
+            stroke_frac = np.zeros((n,), dtype=np.float32)
+    else:
+        aligned_incr = incr_numbers.tolist()
+
+    for field_name, data in list(fields.items()):
+        if data is None:
+            continue
+        incs = field_increments.get(field_name, [])
+        if data.shape[0] and incs:
             by_incr = {int(i): j for j, i in enumerate(incs)}
-            pick = [by_incr[i] for i in incr_numbers if int(i) in by_incr]
+            pick = [by_incr[i] for i in incr_numbers.tolist() if i in by_incr]
             if pick:
                 data = data[pick]
             else:
                 data = np.zeros((len(incr_numbers),) + tuple(data.shape[1:]), dtype=np.float32)
+        if data.shape[0] != len(incr_numbers):
+            data = data[: len(incr_numbers)]
         fields[field_name] = data
 
     displacement = fields.get("displacement")

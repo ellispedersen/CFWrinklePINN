@@ -12,12 +12,41 @@ Two material batches: **Batch A** (21 UD thermoplastic pairs, 2 plies) and **Bat
 
 ```powershell
 cd "C:\Users\ellis\Documents\VS Code\CFWrinklePINN"
-python -m venv .venv
+# Venv is Python 3.12 with --system-site-packages (inherits PyTorch+ROCm)
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
 ```
 
-GPU (AMD RX 7900 XT ROCm) — not needed until WP5+.
+**GPU**: AMD RX 7900 XT, 21.5 GB VRAM, ROCm 7.2, PyTorch 2.9.1+rocmsdk.
+All critical GNN ops verified: GRU, scatter_add, LayerNorm, MultiheadAttention.
+No PyTorch Geometric — use custom message passing with scatter ops.
+
+### WSL2 ROCm Training Path (preferred when Windows stack is unstable)
+
+- WSL distro: `Ubuntu-24.04`
+- Linux-native venv: `/home/ellis/venvs/cfwrinkle`
+- Runtime-link workaround may be required for HIP visibility in WSL:
+  - `LD_PRELOAD=/opt/rocm-7.2.0/lib/libamdhip64.so`
+
+Use the helper scripts:
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_setup_env.sh"
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_gpu_smoke.sh"
+```
+
+Progressive WP7 suite with preflight resource gate:
+
+```powershell
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_progressive_suite.sh --preflight-only"
+wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_progressive_suite.sh --max-level 3"
+```
+
+Default preflight requirements (override via env vars):
+- CPU cores >= 8
+- RAM total >= 12 GB, RAM available >= 6 GB
+- Swap >= 8 GB
+- Disk free >= 40 GB
+- GPU free >= 6 GB (`>= 10 GB` for full CV)
 
 ## Commands
 
@@ -37,11 +66,14 @@ ruff check .
 ## Architecture
 
 ```
-io/aniform_readers/    — Binary AniForm file readers (copied from CFWrinklePredict2, not modified)
-wp1_survey/            — Disposable archaeology scripts (delete after WP1 gate)
-validation/            — Field survey + wrinkle detector (persists through WP3)
+io/aniform_readers/    — Binary AniForm file readers (DO NOT MODIFY)
+wp1_survey/            — Disposable archaeology scripts (WP1 complete)
+validation/            — Field survey + wrinkle detector
+wp2_build/             — HDF5 dataset builder (schema, build, validate)
+wp3_features/          — Feature extraction, graph construction, targets (WP3)
 config/                — pipeline_config.yaml (paths/params) + field_registry.yaml (field metadata)
-reports/               — JSON outputs from WP1 scripts + gate checklist
+reports/               — JSON outputs + gate checklists
+data/                  — cfwrinkle_dataset.h5 (68 GB, gitignored)
 data/                  — HDF5 dataset (WP2+, gitignored)
 ```
 
