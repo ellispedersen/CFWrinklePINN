@@ -35,6 +35,13 @@ Thumbs.db
 
 # Training outputs
 checkpoints/
+latest.pt
+best.pt
+history.json
+summary.json
+*.log
+*.out
+*.err
 
 # Test cache
 .pytest_cache/

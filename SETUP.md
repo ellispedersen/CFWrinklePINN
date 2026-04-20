@@ -118,6 +118,67 @@ wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" ba
 wsl -d Ubuntu-24.04 --cd "/mnt/c/Users/ellis/Documents/VS Code/CFWrinklePINN" bash -lc "./wsl_progressive_suite.sh --max-level 3"
 ```
 
+Track B Level 3 (`run_cross_scale_level3.sh`) now uses a staged profile strategy.
+
+Default (gate-first pilot) profile:
+- `LEVEL3_PROFILE=pilot` (default)
+- `PILOT_MAX_TRAIN_SIMS=8`, `PILOT_MAX_VAL_SIMS=1`
+- `PILOT_EPOCHS=12`
+- `PILOT_MAX_TIMESTEPS=32`
+- `PILOT_ATTN_BATCH_NODES=96`
+- `PILOT_DECODER_CHUNK_T=8`
+
+Run the full mini-train profile after pilot completes:
+
+```bash
+LEVEL3_PROFILE=mini ./run_cross_scale_level3.sh --resume
+```
+
+Full mini profile defaults:
+- `MINI_MAX_TRAIN_SIMS=13`, `MINI_MAX_VAL_SIMS=2`
+- `MINI_EPOCHS=50`
+- `MINI_MAX_TIMESTEPS=64`
+- `MINI_ATTN_BATCH_NODES=128`
+- `MINI_DECODER_CHUNK_T=16`
+
+Optional stall bound for either profile:
+
+```bash
+TRAIN_TIMEOUT_SEC=3600 ./run_cross_scale_level3.sh
+```
+
+If interrupted, failed, or timed out, the script now writes an explicit blocked gate report to `REPORT_PATH` (instead of leaving stale pass/fail ambiguity).
+
+## Track B Level 4 safe pause / night resume (current operating mode)
+
+The Level 4 all-fold run supports safe pause/resume via checkpoint state per fold.
+
+Current known paused state:
+- `fold_0`: complete at epoch 50 (`latest.pt`, `best.pt`, `history.json`)
+- `fold_1`: partial at epoch 21 (`latest.pt`, `best.pt`, `history.json`)
+- normalization state preserved (`fine_input/normalized=1.0`)
+
+Resume command:
+
+```bash
+AUTO_RESUME=1 ./run_cross_scale_level4.sh
+```
+
+Do not lower fidelity constraints when resuming:
+- keep `MAX_TIMESTEPS >= 96`
+- keep fine-feature normalization ON
+
+Fallback retry (tighter mini profile) if Level 3 still OOMs:
+
+```bash
+LEVEL3_PROFILE=mini \
+MINI_MAX_TIMESTEPS=48 \
+MINI_ATTN_BATCH_NODES=96 \
+MINI_DECODER_CHUNK_T=8 \
+MINI_PYTORCH_HIP_ALLOC_CONF=garbage_collection_threshold:0.5,max_split_size_mb:32 \
+./run_cross_scale_level3.sh --resume
+```
+
 Default preflight thresholds are:
 - CPU cores >= 8
 - total RAM >= 12 GB
