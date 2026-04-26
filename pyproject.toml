@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+    "slow: tests that take >10 seconds — skip with: pytest -m 'not slow'",
+    "integration: requires real HDF5 data on disk — skip with: pytest -m 'not integration'",
+]

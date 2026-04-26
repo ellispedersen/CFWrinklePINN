@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 import h5py
 import numpy as np
 import yaml
+
+from wp2_build.schema import FIELD_ORDER as WP2_FIELD_ORDER
 
 FIELD_ORDER = [
     "displacement",
@@ -23,6 +26,12 @@ FIELD_ORDER = [
     "gl_strain",
     "stress",
 ]
+_EXPECTED_WP3_FIELD_ORDER = tuple(name for name in WP2_FIELD_ORDER if name != "crystallinity")
+if tuple(FIELD_ORDER) != _EXPECTED_WP3_FIELD_ORDER:
+    raise RuntimeError(
+        "WP3 FIELD_ORDER drifted from wp2_build.schema.FIELD_ORDER (excluding crystallinity). "
+        f"expected={_EXPECTED_WP3_FIELD_ORDER}, got={tuple(FIELD_ORDER)}"
+    )
 
 
 def load_pipeline_config(root: Path) -> dict[str, Any]:
@@ -31,6 +40,10 @@ def load_pipeline_config(root: Path) -> dict[str, Any]:
 
 
 def get_wp2_h5_path(root: Path) -> Path:
+    env_path = os.environ.get("WP2_H5")
+    if env_path:
+        p = Path(env_path)
+        return p if p.is_absolute() else root / p
     cfg = load_pipeline_config(root)
     rel = str(cfg["dataset"]["hdf5_path"])
     p = Path(rel)
@@ -38,6 +51,10 @@ def get_wp2_h5_path(root: Path) -> Path:
 
 
 def get_wp3_h5_path(root: Path) -> Path:
+    env_path = os.environ.get("WP3_H5")
+    if env_path:
+        p = Path(env_path)
+        return p if p.is_absolute() else root / p
     return root / "data" / "cfwrinkle_wp3_features.h5"
 
 
@@ -61,6 +78,16 @@ def scalarize_vector_temperature(arr: np.ndarray) -> np.ndarray:
     return arr
 
 
+def _attr_to_python(value: Any) -> Any:
+    if isinstance(value, np.ndarray):
+        if value.ndim == 0:
+            return value.item()
+        return value.tolist()
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
 def read_sim_attrs(wp2: h5py.File, sim_id: str) -> dict[str, Any]:
     g = wp2[f"simulations/{sim_id}"]
     out = {
@@ -71,6 +98,9 @@ def read_sim_attrs(wp2: h5py.File, sim_id: str) -> dict[str, Any]:
         "is_wrinkled": bool(g.attrs["is_wrinkled"]),
         "ply_orientations_deg": [float(x) for x in g.attrs["ply_orientations_deg"]],
     }
+    for key in ("ply_thickness_afi_mm", "punch_stroke_loadset2_mm", "blank_initial_temp_C", "solve_dt"):
+        if key in g.attrs:
+            out[key] = _attr_to_python(g.attrs[key])
     return out
 
 

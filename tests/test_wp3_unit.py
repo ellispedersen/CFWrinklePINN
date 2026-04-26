@@ -3,9 +3,11 @@ from __future__ import annotations
 import numpy as np
 
 from wp3_features.correspondence import build_coarse_to_fine_map
-from wp3_features.graph import build_edge_attr, build_edge_index
-from wp3_features.physics import compute_feature_tensor
-from wp3_features.targets import compute_wrinkle_targets
+import pytest
+
+from wp3_features.graph import build_edge_attr, build_edge_index, build_element_adjacency
+from wp3_features.physics import FEATURE_NAMES, compute_feature_tensor
+from wp3_features.targets import TARGET_NAMES, compute_wrinkle_targets
 from wp3_features.temporal import compute_rates, resample_to_uniform
 
 
@@ -15,8 +17,24 @@ def test_graph_builders():
     ei = build_edge_index(elems)
     ea = build_edge_attr(ei, nodes)
     assert ei.shape[0] == 2
+    assert ei.dtype == np.int64
     assert ea.shape[0] == ei.shape[1]
     assert ea.shape[1] == 4
+    assert ea.dtype == np.float32
+    adj = build_element_adjacency(elems)
+    assert adj.shape[0] == 2
+    assert adj.dtype == np.int64
+
+
+def test_graph_builders_validate_shapes():
+    nodes = np.array([[0, 0, 0], [1, 0, 0]], dtype=np.float32)
+    bad_elems = np.array([[0, 1]], dtype=np.int64)
+    with pytest.raises(ValueError, match="shape"):
+        build_edge_index(bad_elems)
+    with pytest.raises(ValueError, match="shape"):
+        build_element_adjacency(bad_elems)
+    with pytest.raises(ValueError, match="out-of-range"):
+        build_edge_attr(np.array([[0, 2], [1, 0]], dtype=np.int64), nodes)
 
 
 def test_temporal_rates_and_resample():
@@ -42,6 +60,7 @@ def test_correspondence_and_targets():
     f_disp[1, :, 2] = np.array([0, 1, 0, 1, 0, 1], dtype=np.float32)
     f_th = np.ones((2, 6), dtype=np.float32)
     tgt = compute_wrinkle_targets(m, f_fs, f_disp, f_th, fine_elems)
+    assert tuple(tgt.keys()) == TARGET_NAMES
     assert tgt["wrinkle_severity"].shape[1] == coarse_elems.shape[0]
 
 
@@ -63,6 +82,21 @@ def test_compute_feature_tensor_shape():
         "stress": np.zeros((n_t, n_n, 3), dtype=np.float32),
     }
     names, feats = compute_feature_tensor(fields, np.linspace(0, 1, n_t, dtype=np.float32), "A")
+    assert tuple(names) == FEATURE_NAMES
     assert feats.shape[:2] == (n_t, n_n)
     assert feats.shape[2] == len(names)
+
+
+def test_targets_reject_out_of_range_fine_index() -> None:
+    mapping = {
+        "n_fine_per_coarse": np.array([1], dtype=np.int32),
+        "coarse_index": np.array([0], dtype=np.int32),
+        "fine_index": np.array([3], dtype=np.int32),
+    }
+    f_fs = np.zeros((2, 3), dtype=np.float32)
+    f_disp = np.zeros((2, 3, 3), dtype=np.float32)
+    f_th = np.ones((2, 3), dtype=np.float32)
+    fine_elems = np.array([[0, 1, 2]], dtype=np.int32)
+    with pytest.raises(ValueError, match="fine_index"):
+        compute_wrinkle_targets(mapping, f_fs, f_disp, f_th, fine_elems)
 

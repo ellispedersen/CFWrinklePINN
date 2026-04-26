@@ -2,10 +2,15 @@
 # Single source of truth for all paths and batch parameters.
 # Never hardcode paths in module code — always load this file.
 
-# ── Raw data roots (read-only, do not copy) ──────────────────────────────────
+# ── Raw data roots ────────────────────────────────────────────────────────────
+# AniForm raw data now lives in the Windows archive (CFWrinkle_Archive/) and
+# on WSL native FS (/home/ellis/cfwrinkle/data/).  These paths point to the
+# archive extraction target if WP1-3 ever need to be re-run.
 data:
   batch_a_root: "C:/Users/ellis/Documents/VS Code/CFWrinklePredict2/data/aniform_raw"
   batch_b_root: "C:/Users/ellis/Documents/VS Code/CFWrinklePredict2/data/simulation_batch_271125"
+  # AniForm material card files (.afl) — moved into this repo at config/materials/
+  materials_dir: "config/materials"
 
 # ── Output dataset (written in WP2/3) ────────────────────────────────────────
   dataset_h5: "C:/Users/ellis/Documents/VS Code/CFWrinklePINN/data/dataset.h5"

@@ -10,6 +10,12 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_PATH="${VENV_PATH:-/home/ellis/venvs/cfwrinkle}"
 ROCM_RUNTIME_LIB="${ROCM_RUNTIME_LIB:-/opt/rocm-7.2.0/lib/libamdhip64.so}"
 
+# WSL-native directories for large files (data + checkpoints).
+# Code stays on the Windows filesystem; only big I/O goes through native ext4.
+# Override with e.g. WSL_DATA_DIR=/data/cfwrinkle ./wsl_progressive_suite.sh
+WSL_DATA_DIR="${WSL_DATA_DIR:-/home/ellis/cfwrinkle/data}"
+WSL_CHECKPOINT_DIR="${WSL_CHECKPOINT_DIR:-/home/ellis/cfwrinkle/checkpoints}"
+
 # Tunable resource gates (can be overridden via env vars).
 MIN_CPU_CORES="${MIN_CPU_CORES:-8}"
 MIN_MEM_TOTAL_GB="${MIN_MEM_TOTAL_GB:-12}"
@@ -29,6 +35,15 @@ MINI_EPOCHS="${MINI_EPOCHS:-50}"
 FULL_CV_EPOCHS="${FULL_CV_EPOCHS:-100}"
 SMOKE_HIDDEN_DIM="${SMOKE_HIDDEN_DIM:-16}"
 TRAIN_HIDDEN_DIM="${TRAIN_HIDDEN_DIM:-64}"
+ATTN_BATCH_NODES="${ATTN_BATCH_NODES:-512}"
+MINI_GPU_RETRY_ATTN_BATCH_NODES="${MINI_GPU_RETRY_ATTN_BATCH_NODES:-128}"
+# Temporal subsampling per level — reduces memory ~8x per halving of T
+SMOKE_MAX_TIMESTEPS="${SMOKE_MAX_TIMESTEPS:-16}"
+OVERFIT_MAX_TIMESTEPS="${OVERFIT_MAX_TIMESTEPS:-32}"
+MINI_MAX_TIMESTEPS="${MINI_MAX_TIMESTEPS:-256}"
+FULL_CV_MAX_TIMESTEPS="${FULL_CV_MAX_TIMESTEPS:-256}"
+ALLOW_CPU_FALLBACK="${ALLOW_CPU_FALLBACK:-0}"
+MINI_FOLD="${MINI_FOLD:-auto}"
 SMOKE_SIM_ID="${SMOKE_SIM_ID:-}"
 OVERFIT_SIM_IDS="${OVERFIT_SIM_IDS:-}"
 
@@ -97,6 +112,30 @@ fi
 source "$VENV_PATH/bin/activate"
 cd "$REPO_DIR"
 export PYTHONPATH="$REPO_DIR"
+
+# Validate and export WSL-native data paths
+if [[ ! -d "$WSL_DATA_DIR" ]]; then
+  echo "ERROR: WSL data directory not found: $WSL_DATA_DIR"
+  echo "Create it and copy your HDF5 files there:"
+  echo "  mkdir -p $WSL_DATA_DIR"
+  echo "  cp /mnt/c/Users/ellis/Documents/VS\\ Code/CFWrinklePINN/data/cfwrinkle_dataset.h5 $WSL_DATA_DIR/"
+  echo "  cp /mnt/c/Users/ellis/Documents/VS\\ Code/CFWrinklePINN/data/cfwrinkle_wp3_features.h5 $WSL_DATA_DIR/"
+  echo "Or override with: WSL_DATA_DIR=/your/path ./wsl_progressive_suite.sh"
+  exit 1
+fi
+export WP3_H5="$WSL_DATA_DIR/cfwrinkle_wp3_features.h5"
+export WP2_H5="$WSL_DATA_DIR/cfwrinkle_dataset.h5"
+if [[ ! -f "$WP3_H5" ]]; then
+  echo "ERROR: WP3 features file not found: $WP3_H5"
+  exit 1
+fi
+if [[ ! -f "$WP2_H5" ]]; then
+  echo "ERROR: WP2 dataset file not found: $WP2_H5"
+  exit 1
+fi
+mkdir -p "$WSL_CHECKPOINT_DIR"
+echo "Data dir:        $WSL_DATA_DIR"
+echo "Checkpoint dir:  $WSL_CHECKPOINT_DIR"
 
 if [[ -f "$ROCM_RUNTIME_LIB" ]]; then
   export LD_LIBRARY_PATH="$(dirname "$ROCM_RUNTIME_LIB"):${LD_LIBRARY_PATH:-}"
@@ -233,7 +272,8 @@ smoke_override = sys.argv[1].strip()
 overfit_override = sys.argv[2].strip()
 preferred = [x.strip() for x in sys.argv[3].split(",") if x.strip()]
 
-with h5py.File("data/cfwrinkle_wp3_features.h5", "r") as f:
+import os
+with h5py.File(os.environ.get("WP3_H5", "data/cfwrinkle_wp3_features.h5"), "r") as f:
     sims = sorted(f["simulations"].keys())
 
 if smoke_override:
@@ -268,16 +308,60 @@ print(",".join(json.loads(sys.argv[1])["overfit_ids"]))
 PY
 )"
 
+MINI_FOLD_SELECTED="$(python - <<'PY' "$MINI_FOLD"
+import sys
+import h5py
+from model.dataset import load_fold_sim_ids
+
+import os
+mini_fold_arg = sys.argv[1].strip().lower()
+wp3 = os.environ.get("WP3_H5", "data/cfwrinkle_wp3_features.h5")
+wp2 = os.environ.get("WP2_H5", "data/cfwrinkle_dataset.h5")
+
+with h5py.File(wp3, "r") as f:
+    available = set(f["simulations"].keys())
+
+valid_folds = []
+for fold in range(5):
+    train_ids, val_ids = load_fold_sim_ids(wp3, fold, wp2_h5_path=wp2)
+    missing = [sid for sid in (train_ids + val_ids) if sid not in available]
+    if not missing:
+        valid_folds.append(fold)
+
+if mini_fold_arg == "auto":
+    if not valid_folds:
+        raise SystemExit("No valid fold found where all split IDs exist in WP3 features.")
+    print(valid_folds[0])
+else:
+    try:
+        selected = int(mini_fold_arg)
+    except ValueError as exc:
+        raise SystemExit(f"MINI_FOLD must be 0-4 or 'auto', got: {mini_fold_arg}") from exc
+    if selected < 0 or selected > 4:
+        raise SystemExit(f"MINI_FOLD out of range: {selected}")
+    train_ids, val_ids = load_fold_sim_ids(wp3, selected, wp2_h5_path=wp2)
+    missing = [sid for sid in (train_ids + val_ids) if sid not in available]
+    if missing:
+        raise SystemExit(
+            f"MINI_FOLD={selected} has IDs missing in WP3 features: {missing[:5]}"
+            + (" ..." if len(missing) > 5 else "")
+        )
+    print(selected)
+PY
+)"
+
 echo
 echo "Selected smoke sim: $SMOKE_ID"
 echo "Selected overfit sims: $OVERFIT_IDS"
+echo "Selected mini-train fold: $MINI_FOLD_SELECTED"
 
 if [[ "$MAX_LEVEL" -ge 0 ]]; then
   run_step "Level 0: dataset + test gate" python - <<'PY'
 import h5py
 from pathlib import Path
 
-path = Path("data/cfwrinkle_wp3_features.h5")
+import os
+path = Path(os.environ.get("WP3_H5", "data/cfwrinkle_wp3_features.h5"))
 if not path.exists():
     raise SystemExit(f"Missing dataset: {path}")
 with h5py.File(path, "r") as f:
@@ -285,7 +369,10 @@ with h5py.File(path, "r") as f:
     if len(sims) != 65:
         raise SystemExit(f"Expected 65 simulations, found {len(sims)}")
     sample = f["simulations"][sims[0]]
-    x = sample["coarse"]["resampled"]["fields"].shape
+    if "coarse_fields_resampled" in sample:
+        x = sample["coarse_fields_resampled"].shape
+    else:
+        x = sample["coarse"]["resampled"]["fields"].shape
     y = sample["targets"]["wrinkle_severity"].shape
     print(f"sim_count={len(sims)}")
     print(f"sample_features_shape={x}")
@@ -296,45 +383,155 @@ fi
 
 if [[ "$MAX_LEVEL" -ge 1 ]]; then
   run_step "Level 1: smoke train" \
-    python -m training.train \
+    env PYTHONUNBUFFERED=1 \
+    python -u -m training.train \
       --sim-ids "$SMOKE_ID" \
       --epochs "$SMOKE_EPOCHS" \
       --hidden-dim "$SMOKE_HIDDEN_DIM" \
+      --attn-batch-nodes "$ATTN_BATCH_NODES" \
+      --max-timesteps "$SMOKE_MAX_TIMESTEPS" \
+      --amp \
       --device "$DEVICE" \
-      --output checkpoints/progressive/level1_smoke
+      --output "$WSL_CHECKPOINT_DIR/progressive/level1_smoke"
+  run_step "Level 1: gate check" \
+    python -m training.gate_check \
+      --level 1 \
+      --run-dir "$WSL_CHECKPOINT_DIR/progressive/level1_smoke" \
+      --report-path "$REPO_DIR/reports/wp7_gate_level1.json"
 fi
 
 if [[ "$MAX_LEVEL" -ge 2 ]]; then
   run_step "Level 2: overfit train" \
-    python -m training.train \
+    env PYTHONUNBUFFERED=1 \
+    python -u -m training.train \
       --sim-ids "$OVERFIT_IDS" \
       --epochs "$OVERFIT_EPOCHS" \
       --hidden-dim "$TRAIN_HIDDEN_DIM" \
+      --attn-batch-nodes "$ATTN_BATCH_NODES" \
+      --max-timesteps "$OVERFIT_MAX_TIMESTEPS" \
+      --amp \
       --device "$DEVICE" \
-      --output checkpoints/progressive/level2_overfit
+      --output "$WSL_CHECKPOINT_DIR/progressive/level2_overfit"
+  run_step "Level 2: gate check" \
+    python -m training.gate_check \
+      --level 2 \
+      --run-dir "$WSL_CHECKPOINT_DIR/progressive/level2_overfit" \
+      --report-path "$REPO_DIR/reports/wp7_gate_level2.json"
 fi
 
 if [[ "$MAX_LEVEL" -ge 3 ]]; then
-  run_step "Level 3: mini-train" \
-    python -m training.train \
-      --fold 0 \
-      --max-train-sims 13 \
-      --max-val-sims 2 \
-      --epochs "$MINI_EPOCHS" \
-      --hidden-dim "$TRAIN_HIDDEN_DIM" \
-      --device "$DEVICE" \
-      --output checkpoints/progressive/level3_mini
+  echo
+  echo "=== Level 3: mini-train ==="
+  MINI_LOG="$WSL_CHECKPOINT_DIR/progressive/level3_mini.run.log"
+  mkdir -p "$(dirname "$MINI_LOG")"
+  set +e
+  PYTHONUNBUFFERED=1 \
+  PYTORCH_HIP_ALLOC_CONF="garbage_collection_threshold:0.8,max_split_size_mb:512" \
+  python -u -m training.train \
+    --fold "$MINI_FOLD_SELECTED" \
+    --max-train-sims 13 \
+    --max-val-sims 2 \
+    --epochs "$MINI_EPOCHS" \
+    --hidden-dim "$TRAIN_HIDDEN_DIM" \
+    --attn-batch-nodes "$ATTN_BATCH_NODES" \
+    --max-timesteps "$MINI_MAX_TIMESTEPS" \
+    --amp \
+    --device "$DEVICE" \
+    --output "$WSL_CHECKPOINT_DIR/progressive/level3_mini" \
+    2>&1 | tee "$MINI_LOG"
+  mini_rc=${PIPESTATUS[0]}
+  set -e
+  if [[ $mini_rc -ne 0 ]]; then
+    if [[ "$DEVICE" != "cpu" ]] && grep -Eq "OutOfMemoryError|CUDA out of memory|HSA exception: MemoryRegion::BlockAllocator::alloc failed" "$MINI_LOG"; then
+      echo "Level 3 GPU mini-train hit OOM; retrying on GPU with tighter memory settings."
+      MINI_RETRY_LOG="$WSL_CHECKPOINT_DIR/progressive/level3_mini.retry-gpu.log"
+      set +e
+      PYTHONUNBUFFERED=1 \
+      PYTORCH_HIP_ALLOC_CONF="garbage_collection_threshold:0.6,max_split_size_mb:64" \
+      python -u -m training.train \
+        --fold "$MINI_FOLD_SELECTED" \
+        --max-train-sims 13 \
+        --max-val-sims 2 \
+        --epochs "$MINI_EPOCHS" \
+        --hidden-dim "$TRAIN_HIDDEN_DIM" \
+        --attn-batch-nodes "$MINI_GPU_RETRY_ATTN_BATCH_NODES" \
+        --max-timesteps "$MINI_MAX_TIMESTEPS" \
+        --amp \
+        --device "$DEVICE" \
+        --resume \
+        --output "$WSL_CHECKPOINT_DIR/progressive/level3_mini" \
+        2>&1 | tee "$MINI_RETRY_LOG"
+      mini_retry_rc=${PIPESTATUS[0]}
+      set -e
+      if [[ $mini_retry_rc -ne 0 ]]; then
+        if [[ "$ALLOW_CPU_FALLBACK" == "1" ]]; then
+          echo "GPU retry failed; falling back to CPU because ALLOW_CPU_FALLBACK=1."
+          run_step "Level 3: mini-train (CPU fallback)" \
+            python -m training.train \
+              --fold "$MINI_FOLD_SELECTED" \
+              --max-train-sims 13 \
+              --max-val-sims 2 \
+              --epochs "$MINI_EPOCHS" \
+              --hidden-dim "$TRAIN_HIDDEN_DIM" \
+              --attn-batch-nodes "$MINI_GPU_RETRY_ATTN_BATCH_NODES" \
+              --max-timesteps "$MINI_MAX_TIMESTEPS" \
+              --amp \
+              --device cpu \
+              --output "$WSL_CHECKPOINT_DIR/progressive/level3_mini_cpu"
+        else
+          echo "GPU retry failed and CPU fallback is disabled (ALLOW_CPU_FALLBACK=0)."
+          echo "See $MINI_RETRY_LOG"
+          exit $mini_retry_rc
+        fi
+      fi
+    else
+      echo "Level 3 mini-train failed. See $MINI_LOG"
+      exit $mini_rc
+    fi
+  fi
+  # Gate check: primary and GPU retry both write to level3_mini (--resume).
+  # CPU fallback writes to level3_mini_cpu as a separate run.
+  LEVEL3_DIR=""
+  for candidate in \
+      "$WSL_CHECKPOINT_DIR/progressive/level3_mini" \
+      "$WSL_CHECKPOINT_DIR/progressive/level3_mini_cpu"; do
+    if [[ -f "$candidate/history.json" ]]; then
+      LEVEL3_DIR="$candidate"
+      break
+    fi
+  done
+  if [[ -n "$LEVEL3_DIR" ]]; then
+    run_step "Level 3: gate check" \
+      python -m training.gate_check \
+        --level 3 \
+        --run-dir "$LEVEL3_DIR" \
+        --report-path "$REPO_DIR/reports/wp7_gate_level3.json"
+  else
+    echo "WARNING: No Level 3 history.json found; skipping gate check."
+  fi
 fi
 
 if [[ "$MAX_LEVEL" -ge 4 || "$INCLUDE_FULL_CV" -eq 1 ]]; then
   run_step "Level 4: full CV" \
-    python -m training.train \
+    env PYTHONUNBUFFERED=1 PYTORCH_HIP_ALLOC_CONF="garbage_collection_threshold:0.8,max_split_size_mb:512" \
+    python -u -m training.train \
       --all-folds \
       --epochs "$FULL_CV_EPOCHS" \
       --hidden-dim "$TRAIN_HIDDEN_DIM" \
+      --attn-batch-nodes "$ATTN_BATCH_NODES" \
+      --max-timesteps "$FULL_CV_MAX_TIMESTEPS" \
+      --amp \
       --device "$DEVICE" \
-      --output checkpoints/progressive/level4_full_cv
+      --output "$WSL_CHECKPOINT_DIR/progressive/level4_full_cv"
+  run_step "Level 4: gate check" \
+    python -m training.gate_check \
+      --level 4 \
+      --run-dir "$WSL_CHECKPOINT_DIR/progressive/level4_full_cv" \
+      --report-path "$REPO_DIR/reports/wp7_gate_level4.json"
 fi
 
+echo
+echo "=== Gate Reports ==="
+ls -la "$REPO_DIR/reports/wp7_gate_level"*.json 2>/dev/null || echo "(no gate reports yet)"
 echo
 echo "Progressive suite complete through level $MAX_LEVEL."

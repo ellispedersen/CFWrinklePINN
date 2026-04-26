@@ -9,6 +9,8 @@ import h5py
 import numpy as np
 
 from .h5_utils import get_wp3_h5_path
+from .physics import FEATURE_NAMES
+from .targets import TARGET_NAMES
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,6 +21,16 @@ def _pass(name: str) -> None:
 
 def _fail(name: str, msg: str) -> None:
     print(f"FAIL: {name} - {msg}")
+
+
+def _parse_json_attr(value: object) -> object:
+    if isinstance(value, bytes):
+        value = value.decode("utf-8")
+    elif isinstance(value, np.bytes_):
+        value = bytes(value).decode("utf-8")
+    if not isinstance(value, str):
+        raise TypeError(f"Expected JSON string attr, got {type(value)!r}")
+    return json.loads(value)
 
 
 def _check_graph_undirected(h5: h5py.File) -> tuple[bool, str]:
@@ -55,6 +67,39 @@ def _check_targets(h5: h5py.File) -> tuple[bool, str]:
             return False, f"{sid} high initial wrinkle severity"
         if np.isnan(t).all():
             return False, f"{sid} all target values are NaN"
+    return True, "ok"
+
+
+def _check_label_schema(h5: h5py.File) -> tuple[bool, str]:
+    expected_feature_names = list(FEATURE_NAMES)
+    expected_rate_names = [f"d_dt:{name}" for name in expected_feature_names]
+    expected_target_names = list(TARGET_NAMES)
+    for sid in h5["simulations"].keys():
+        res = h5[f"simulations/{sid}/coarse/resampled"]
+        if "feature_names" not in res.attrs:
+            return False, f"{sid} missing coarse/resampled feature_names attr"
+        if "rate_feature_names" not in res.attrs:
+            return False, f"{sid} missing coarse/resampled rate_feature_names attr"
+        feat_names = _parse_json_attr(res.attrs["feature_names"])
+        rate_names = _parse_json_attr(res.attrs["rate_feature_names"])
+        if feat_names != expected_feature_names:
+            return False, f"{sid} feature_names mismatch"
+        if rate_names != expected_rate_names:
+            return False, f"{sid} rate_feature_names mismatch"
+        if int(res["fields"].shape[-1]) != len(expected_feature_names):
+            return False, f"{sid} coarse/resampled/fields channel mismatch"
+        if int(res["rates"].shape[-1]) != len(expected_feature_names):
+            return False, f"{sid} coarse/resampled/rates channel mismatch"
+
+        tgt = h5[f"simulations/{sid}/targets"]
+        if "target_names" not in tgt.attrs:
+            return False, f"{sid} missing targets target_names attr"
+        target_names = _parse_json_attr(tgt.attrs["target_names"])
+        if target_names != expected_target_names:
+            return False, f"{sid} target_names mismatch"
+        for target_name in target_names:
+            if target_name not in tgt:
+                return False, f"{sid} missing targets/{target_name}"
     return True, "ok"
 
 
@@ -126,6 +171,7 @@ def main() -> None:
         ("stroke-grid", _check_stroke_grid),
         ("rate-initial", _check_rate_init),
         ("targets", _check_targets),
+        ("label-schema", _check_label_schema),
         ("material-normalisation", _check_material_norm),
     ]
     failed = 0

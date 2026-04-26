@@ -25,6 +25,7 @@ FIELD_DEFS: dict[str, tuple[int, int, tuple[int, ...], str]] = {
     # Batch A only
     "crystallinity": (214, 1, (), "ply"),
 }
+FIELD_ORDER: tuple[str, ...] = tuple(FIELD_DEFS.keys())
 
 CHUNK_TIME_DIM = 1
 CHUNK_NODE_DIM = 4096

@@ -7,7 +7,7 @@ import torch
 from model.gnn import FormingGraphNet
 from model.loss import wrinkle_loss
 
-T, N, M, E = 256, 200, 150, 500
+T, N, M, E = 32, 200, 150, 500  # T=32 matches default --max-timesteps to avoid OOM in CI
 
 
 def _synthetic_batch() -> dict:
@@ -33,7 +33,7 @@ def test_full_training_step() -> None:
     model.train()
     optimizer.zero_grad()
     pred = model(batch)
-    assert pred.shape == (T, M, 4)
+    assert pred.shape == (T, M, 4), f"Expected ({T}, {M}, 4), got {pred.shape}"
 
     loss, _ = wrinkle_loss(pred, batch["targets"])
     assert not torch.isnan(loss)

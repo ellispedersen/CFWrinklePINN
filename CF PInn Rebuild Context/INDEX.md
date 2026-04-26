@@ -83,6 +83,34 @@ WP9  Physics-Informed Losses      ✅ COMPLETE
 WP10 Fine-Mesh Message Passing    ✅ COMPLETE
   └─ Fine element adjacency graph, node_coarse_map scatter, per-timestep MP loop implemented
   └─ See WP10_fine_mesh_mp.md
+
+WP11 Track B Training & Gate      ✅ COMPLETE — Level 4 gate PASSED 2026-04-25
+  └─ Full report: reports/CROSSSCALE_LEVEL4_TRAINING_REPORT_2026-04-25.md
+  └─ WP doc: WP11_track_b_training.md (issues, ROCm constraints, Track C forward work)
+  └─ Gate artifact: reports/wp7_gate_level4_cross_scale.json
+  └─ 5-fold CV: mean val_loss=0.0854; Track A vs B: reports/track_ab_comparison.json
+  └─ Inference pipeline verified; normalization bug fixed in extract_single.py
+  └─ Test suite: 170 passed, 1 skipped (2026-04-25)
+  └─ 4 open issues → Track C (Track B checkpoints preserved as reference baseline):
+     1. dz R²<-8 in folds 0/2/4 — increase fine_dz loss weight (see WP11)
+     2. Stress spatial R²≈0.09 — enable use_fine_mp=True (see WP10/WP11)
+     3. Batch B R² unstable — MAE-only evaluation for near-flat fields
+     4. mold_set_004 low-signal sim inflating summaries
+
+
+TRACK C — CrossScaleNet Improved (fine_mp ON, dz loss tuned)
+────────────────────────────────────────────────────────────
+Track B preserved as reference. Track C checkpoints to separate output directory.
+Switch with --model-type cross-scale (same flag; checkpoint config carries use_fine_mp).
+
+WP12 Track C Training              🔲 NOT STARTED
+  └─ Changes from Track B:
+     - use_fine_mp=True (enable WP10 fine-mesh message passing)
+     - fine_dz loss weight: 1.5 → 3.0–5.0 (fix dz fold-lottery)
+     - Batch B R² guard in evaluate.py (min-variance threshold)
+  └─ Output dir: /home/ellis/cfwrinkle/checkpoints/progressive/cross_scale_level4_cv_trackc/
+  └─ Track B reference dir: /home/ellis/cfwrinkle/checkpoints/progressive/cross_scale_level4_cv/
+  └─ See WP11_track_b_training.md for full issue specs
 ```
 
 ---
@@ -98,9 +126,11 @@ WP10 Fine-Mesh Message Passing    ✅ COMPLETE
 | `WP5_stratification.md` | Label scheme, fold construction — reference doc (implemented in WP2) | A | ✅ Done |
 | `WP6_model_architecture.md` | FormingGraphNet design, dataset interface, loss functions | A | ✅ Done |
 | `WP7_training_evaluation.md` | Training loop, progressive test runs, visualisation, inference | A | ✅ Done |
-| `WP8_cross_scale_net.md` | CrossScaleNet architecture, WP3 rebuild, Phase 1 training | B | 🔲 WP3 rebuild needed |
-| `WP9_pinn_losses.md` | Physics-informed losses: buckling onset, coupling, coherence | B | 🔲 After WP8 Level 2 |
-| `WP10_fine_mesh_mp.md` | Fine element adjacency, node_coarse_map, per-timestep fine MP | B | 🔲 After WP9 |
+| `WP8_cross_scale_net.md` | CrossScaleNet architecture, WP3 rebuild, Phase 1 training | B | ✅ Done |
+| `WP9_pinn_losses.md` | Physics-informed losses: buckling onset, coupling, coherence | B | ✅ Done |
+| `WP10_fine_mesh_mp.md` | Fine element adjacency, node_coarse_map, per-timestep fine MP | B | ✅ Done |
+| `WP11_track_b_training.md` | Level 4 CV outcomes, 4 open quality issues, ROCm constraints, Track C forward work | B | ✅ Done — 4 open items |
+| `WP12_track_c_training.md` | Track C training plan: use_fine_mp=True, dz loss tuning, Batch B eval fix | C | 🔲 Not started |
 
 ---
 

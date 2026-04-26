@@ -2,6 +2,46 @@ from __future__ import annotations
 
 import numpy as np
 
+FEATURE_NAMES: tuple[str, ...] = (
+    "dx",
+    "dy",
+    "dz",
+    "temperature",
+    "eq_shear_rate",
+    "fiber_dir_1_x",
+    "fiber_dir_1_y",
+    "fiber_dir_1_z",
+    "fiber_dir_2_x",
+    "fiber_dir_2_y",
+    "fiber_dir_2_z",
+    "E11",
+    "E22",
+    "E12",
+    "eps_1",
+    "eps_2",
+    "s11",
+    "s22",
+    "s12",
+    "sigma_1",
+    "sigma_2",
+    "sigma_comp",
+    "fiber_stress_1",
+    "fiber_stress_2",
+    "fiber_strain_1",
+    "fiber_strain_2",
+    "thickness",
+    "thickness_ratio",
+    "shear_angle",
+    "locking_proximity",
+    "area_change_ratio",
+    "draw_in_distance",
+    "fiber_comp_indicator",
+    "bending_energy_proxy",
+    "thickness_rate",
+    "shear_rate",
+    "fiber_stress_rate",
+)
+
 
 def _align_nodes(arr: np.ndarray, n_nodes: int) -> np.ndarray:
     if arr.shape[1] == n_nodes:
@@ -24,28 +64,53 @@ def principal_components_2d(s11: np.ndarray, s22: np.ndarray, s12: np.ndarray) -
     return (m + r).astype(np.float32), (m - r).astype(np.float32)
 
 
+def _require_shape(arr: np.ndarray, expected: tuple[int, ...], name: str) -> None:
+    if arr.ndim != len(expected):
+        raise ValueError(f"{name} must have {len(expected)} dims, got shape {arr.shape}")
+    for i, exp in enumerate(expected):
+        if exp >= 0 and arr.shape[i] != exp:
+            raise ValueError(f"{name} has invalid shape {arr.shape}; expected dim {i} == {exp}")
+
+
 def compute_feature_tensor(
     coarse_fields: dict[str, np.ndarray],
     times_s: np.ndarray,
     batch: str,
 ) -> tuple[list[str], np.ndarray]:
     disp = coarse_fields["displacement"].astype(np.float32)
+    if str(batch) not in {"A", "B"}:
+        raise ValueError(f"batch must be 'A' or 'B', got {batch!r}")
+    if disp.ndim != 3 or disp.shape[2] != 3:
+        raise ValueError(f"displacement must have shape (T, N, 3), got {disp.shape}")
     n_t, n_nodes, _ = disp.shape
+    _require_shape(times_s, (n_t,), "times_s")
 
     temp = coarse_fields["temperature"].astype(np.float32)
     if temp.ndim == 3:
         temp = temp.mean(axis=-1)
+    _require_shape(temp, (n_t, n_nodes), "temperature")
     thick = coarse_fields["thickness"].astype(np.float32)
+    _require_shape(thick, (n_t, n_nodes), "thickness")
     eq_shear = coarse_fields["eq_shear_rate"].astype(np.float32)
+    _require_shape(eq_shear, (n_t, n_nodes), "eq_shear_rate")
     dir1 = coarse_fields["fiber_dir_1"].astype(np.float32)
+    _require_shape(dir1, (n_t, n_nodes, 3), "fiber_dir_1")
     dir2 = coarse_fields["fiber_dir_2"].astype(np.float32)
+    _require_shape(dir2, (n_t, n_nodes, 3), "fiber_dir_2")
     shear = coarse_fields["shear_angle"].astype(np.float32)
+    _require_shape(shear, (n_t, n_nodes), "shear_angle")
     fstr1 = coarse_fields["fiber_strain_1"].astype(np.float32)
+    _require_shape(fstr1, (n_t, n_nodes), "fiber_strain_1")
     fstr2 = coarse_fields["fiber_strain_2"].astype(np.float32)
+    _require_shape(fstr2, (n_t, n_nodes), "fiber_strain_2")
     fst1 = coarse_fields["fiber_stress_1"].astype(np.float32)
+    _require_shape(fst1, (n_t, n_nodes), "fiber_stress_1")
     fst2 = coarse_fields["fiber_stress_2"].astype(np.float32)
+    _require_shape(fst2, (n_t, n_nodes), "fiber_stress_2")
     gl = _align_nodes(coarse_fields["gl_strain"].astype(np.float32), n_nodes)
     st = _align_nodes(coarse_fields["stress"].astype(np.float32), n_nodes)
+    _require_shape(gl, (n_t, n_nodes, 3), "gl_strain")
+    _require_shape(st, (n_t, n_nodes, 3), "stress")
 
     e11, e22, e12 = gl[..., 0], gl[..., 1], gl[..., 2]
     s11, s22, s12 = st[..., 0], st[..., 1], st[..., 2]
@@ -75,45 +140,7 @@ def compute_feature_tensor(
     shear_rate = _rates(shear)
     fst1_rate = _rates(fst1)
 
-    names = [
-        "dx",
-        "dy",
-        "dz",
-        "temperature",
-        "eq_shear_rate",
-        "fiber_dir_1_x",
-        "fiber_dir_1_y",
-        "fiber_dir_1_z",
-        "fiber_dir_2_x",
-        "fiber_dir_2_y",
-        "fiber_dir_2_z",
-        "E11",
-        "E22",
-        "E12",
-        "eps_1",
-        "eps_2",
-        "s11",
-        "s22",
-        "s12",
-        "sigma_1",
-        "sigma_2",
-        "sigma_comp",
-        "fiber_stress_1",
-        "fiber_stress_2",
-        "fiber_strain_1",
-        "fiber_strain_2",
-        "thickness",
-        "thickness_ratio",
-        "shear_angle",
-        "locking_proximity",
-        "area_change_ratio",
-        "draw_in_distance",
-        "fiber_comp_indicator",
-        "bending_energy_proxy",
-        "thickness_rate",
-        "shear_rate",
-        "fiber_stress_rate",
-    ]
+    names = list(FEATURE_NAMES)
     feats = np.stack(
         [
             disp[..., 0],
@@ -156,5 +183,9 @@ def compute_feature_tensor(
         ],
         axis=-1,
     ).astype(np.float32)
+    if feats.shape[-1] != len(FEATURE_NAMES):
+        raise RuntimeError(
+            f"Feature channel count mismatch: features={feats.shape[-1]} expected={len(FEATURE_NAMES)}"
+        )
     return names, feats
 
