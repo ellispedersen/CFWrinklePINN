@@ -443,12 +443,17 @@ def train_fold(
             "model_config": model_cfg,
         }
         add_checkpoint_contract_metadata(ckpt_dict, model_type=model_type)
-        # Always save latest.pt so resume can recover from the last completed epoch.
-        torch.save(ckpt_dict, output_dir / "latest.pt")
+        # Atomic write: save to .tmp then rename so a spot-eviction mid-write
+        # never leaves a corrupted checkpoint that breaks resume.
+        _ckpt_tmp = output_dir / "latest.pt.tmp"
+        torch.save(ckpt_dict, _ckpt_tmp)
+        _ckpt_tmp.rename(output_dir / "latest.pt")
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience_counter = 0
-            torch.save(ckpt_dict, output_dir / "best.pt")
+            _best_tmp = output_dir / "best.pt.tmp"
+            torch.save(ckpt_dict, _best_tmp)
+            _best_tmp.rename(output_dir / "best.pt")
         else:
             patience_counter += 1
             if patience_counter >= patience:
@@ -470,6 +475,10 @@ def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="WP7 training loop")
     p.add_argument("--fold", type=int, default=0)
     p.add_argument("--all-folds", action="store_true")
+    p.add_argument("--folds", type=str, default=None,
+                   help="Comma-separated fold indices to run, e.g. '0,2,4'. "
+                        "Runs the subset sequentially in this process; use "
+                        "CUDA_VISIBLE_DEVICES to parallelize across GPUs.")
     p.add_argument("--sim-ids", type=str, default=None, help="Comma-separated sim IDs for custom run")
     p.add_argument("--max-train-sims", type=int, default=None)
     p.add_argument("--max-val-sims", type=int, default=None)
@@ -661,8 +670,16 @@ def main() -> None:
             json.dump([result], f, indent=2)
         return
 
-    if args.all_folds:
-        fold_ids = [0, 1, 2, 3, 4]
+    if args.all_folds or args.folds is not None:
+        if args.folds is not None:
+            try:
+                fold_ids = [int(f.strip()) for f in args.folds.split(",") if f.strip()]
+            except ValueError as exc:
+                raise ValueError(f"--folds must be comma-separated integers, got: {args.folds!r}") from exc
+            if not fold_ids or any(f not in range(5) for f in fold_ids):
+                raise ValueError(f"--folds: all indices must be in 0–4, got {fold_ids}")
+        else:
+            fold_ids = [0, 1, 2, 3, 4]
         results = []
         for fold in fold_ids:
             train_ids, val_ids = load_fold_sim_ids(WP3_H5, fold, wp2_h5_path=WP2_H5)

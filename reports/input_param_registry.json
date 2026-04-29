@@ -1,0 +1,2597 @@
+[
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_0.Results\\2025-08-31 13_12_15\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "2025-08-31 13_12_15",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.3,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_0_die.Section 1",
+      "flat_smooth_0_punch.Section 1",
+      "flat_smooth_0_punch.Section 2",
+      "flat_smooth_0_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_0_die",
+      "flat_smooth_0_punch"
+    ],
+    "sim_id": "geom_0_0",
+    "batch": "A",
+    "run_used": "2025-08-31 13_12_15"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_1.Results\\2025-08-31 15_25_28\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "2025-08-31 geom 1_0 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_1_die.Section 1",
+      "flat_smooth_1_punch.Section 1",
+      "flat_smooth_1_punch.Section 2",
+      "flat_smooth_1_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_1_die",
+      "flat_smooth_1_punch"
+    ],
+    "sim_id": "geom_0_1",
+    "batch": "A",
+    "run_used": "2025-08-31 15_25_28"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_10.Results\\2025-08-31 15_42_42\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_10 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_10_die.Section 1",
+      "flat_smooth_10_punch.Section 1",
+      "flat_smooth_10_punch.Section 2",
+      "flat_smooth_10_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_10_die",
+      "flat_smooth_10_punch"
+    ],
+    "sim_id": "geom_0_10",
+    "batch": "A",
+    "run_used": "2025-08-31 15_42_42"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_11.Results\\2025-08-31 15_44_04\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_11 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_11_die.Section 1",
+      "flat_smooth_11_punch.Section 1",
+      "flat_smooth_11_punch.Section 2",
+      "flat_smooth_11_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_11_die",
+      "flat_smooth_11_punch"
+    ],
+    "sim_id": "geom_0_11",
+    "batch": "A",
+    "run_used": "2025-08-31 15_44_04"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_12.Results\\2025-08-31 15_46_28\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_12 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_12_die.Section 1",
+      "flat_smooth_12_punch.Section 1",
+      "flat_smooth_12_punch.Section 2",
+      "flat_smooth_12_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_12_die",
+      "flat_smooth_12_punch"
+    ],
+    "sim_id": "geom_0_12",
+    "batch": "A",
+    "run_used": "2025-08-31 15_46_28"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_13.Results\\2025-08-31 15_47_39\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_13 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_13_die.Section 1",
+      "flat_smooth_13_punch.Section 1",
+      "flat_smooth_13_punch.Section 2",
+      "flat_smooth_13_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_13_die",
+      "flat_smooth_13_punch"
+    ],
+    "sim_id": "geom_0_13",
+    "batch": "A",
+    "run_used": "2025-08-31 15_47_39"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_14.Results\\2025-08-31 15_49_15\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_14 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_14_die.Section 1",
+      "flat_smooth_14_punch.Section 1",
+      "flat_smooth_14_punch.Section 2",
+      "flat_smooth_14_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_14_die",
+      "flat_smooth_14_punch"
+    ],
+    "sim_id": "geom_0_14",
+    "batch": "A",
+    "run_used": "2025-08-31 15_49_15"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_15.Results\\2025-08-31 15_50_34\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_15 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_15_die.Section 1",
+      "flat_smooth_15_punch.Section 1",
+      "flat_smooth_15_punch.Section 2",
+      "flat_smooth_15_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_15_die",
+      "flat_smooth_15_punch"
+    ],
+    "sim_id": "geom_0_15",
+    "batch": "A",
+    "run_used": "2025-08-31 15_50_34"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_16.Results\\2025-08-31 15_52_02\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_16 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_16_die.Section 1",
+      "flat_smooth_16_punch.Section 1",
+      "flat_smooth_16_punch.Section 2",
+      "flat_smooth_16_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_16_die",
+      "flat_smooth_16_punch"
+    ],
+    "sim_id": "geom_0_16",
+    "batch": "A",
+    "run_used": "2025-08-31 15_52_02"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_17.Results\\2025-08-31 15_53_37\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_17 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_17_die.Section 1",
+      "flat_smooth_17_punch.Section 1",
+      "flat_smooth_17_punch.Section 2",
+      "flat_smooth_17_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_17_die",
+      "flat_smooth_17_punch"
+    ],
+    "sim_id": "geom_0_17",
+    "batch": "A",
+    "run_used": "2025-08-31 15_53_37"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_18.Results\\2025-08-31 15_55_14\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_18 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_18_die.Section 1",
+      "flat_smooth_18_punch.Section 1",
+      "flat_smooth_18_punch.Section 2",
+      "flat_smooth_18_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_18_die",
+      "flat_smooth_18_punch"
+    ],
+    "sim_id": "geom_0_18",
+    "batch": "A",
+    "run_used": "2025-08-31 15_55_14"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_19.Results\\2025-08-31 15_56_28\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_19 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_19_die.Section 1",
+      "flat_smooth_19_punch.Section 1",
+      "flat_smooth_19_punch.Section 2",
+      "flat_smooth_19_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_19_die",
+      "flat_smooth_19_punch"
+    ],
+    "sim_id": "geom_0_19",
+    "batch": "A",
+    "run_used": "2025-08-31 15_56_28"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_2.Results\\2025-08-31 15_28_04\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_2 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_2_die.Section 1",
+      "flat_smooth_2_punch.Section 1",
+      "flat_smooth_2_punch.Section 2",
+      "flat_smooth_2_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_2_die",
+      "flat_smooth_2_punch"
+    ],
+    "sim_id": "geom_0_2",
+    "batch": "A",
+    "run_used": "2025-08-31 15_28_04"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_3.Results\\2025-08-31 15_29_28\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_3 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_3_die.Section 1",
+      "flat_smooth_3_punch.Section 1",
+      "flat_smooth_3_punch.Section 2",
+      "flat_smooth_3_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_3_die",
+      "flat_smooth_3_punch"
+    ],
+    "sim_id": "geom_0_3",
+    "batch": "A",
+    "run_used": "2025-08-31 15_29_28"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_4.Results\\2025-08-31 15_31_29\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_4 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_4_die.Section 1",
+      "flat_smooth_4_punch.Section 1",
+      "flat_smooth_4_punch.Section 2",
+      "flat_smooth_4_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_4_die",
+      "flat_smooth_4_punch"
+    ],
+    "sim_id": "geom_0_4",
+    "batch": "A",
+    "run_used": "2025-08-31 15_31_29"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_5.Results\\2025-08-31 15_33_37\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_5 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_5_die.Section 1",
+      "flat_smooth_5_punch.Section 1",
+      "flat_smooth_5_punch.Section 2",
+      "flat_smooth_5_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_5_die",
+      "flat_smooth_5_punch"
+    ],
+    "sim_id": "geom_0_5",
+    "batch": "A",
+    "run_used": "2025-08-31 15_33_37"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_6.Results\\2025-08-31 15_36_27\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_6 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_6_die.Section 1",
+      "flat_smooth_6_punch.Section 1",
+      "flat_smooth_6_punch.Section 2",
+      "flat_smooth_6_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_6_die",
+      "flat_smooth_6_punch"
+    ],
+    "sim_id": "geom_0_6",
+    "batch": "A",
+    "run_used": "2025-08-31 15_36_27"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_7.Results\\2025-08-31 15_37_57\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_7 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_7_die.Section 1",
+      "flat_smooth_7_punch.Section 1",
+      "flat_smooth_7_punch.Section 2",
+      "flat_smooth_7_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_7_die",
+      "flat_smooth_7_punch"
+    ],
+    "sim_id": "geom_0_7",
+    "batch": "A",
+    "run_used": "2025-08-31 15_37_57"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_8.Results\\2025-08-31 15_39_31\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm']",
+    "geometry_name": "geom 0_8 .55",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_8_punch.Section 1",
+      "flat_smooth_8_punch.Section 2",
+      "flat_smooth_8_punch.Section 3",
+      "flat_smooth_9_die.Section 1",
+      "shuttle frame",
+      "flat_smooth_8_punch",
+      "flat_smooth_9_die"
+    ],
+    "sim_id": "geom_0_8",
+    "batch": "A",
+    "run_used": "2025-08-31 15_39_31"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\aniform_raw\\geom 0_9.Results\\2025-08-31 15_41_00\\model.afi",
+    "parse_status": "complete",
+    "parse_notes": "",
+    "geometry_name": "geom 0_9 .55",
+    "punch_stroke_loadset1_mm": 70.0,
+    "punch_stroke_loadset2_mm": 75.0,
+    "punch_stroke_total_mm": 75.0,
+    "n_plies": 2,
+    "ply_orientations_deg": [
+      0.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.325,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": 320,
+    "n_loadsets": 3,
+    "solve_increments": [
+      10,
+      10,
+      30
+    ],
+    "solve_dt": [
+      2.0,
+      2.0,
+      0.0333333333333333
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "flat_smooth_9_die.Section 1",
+      "flat_smooth_9_punch.Section 1",
+      "flat_smooth_9_punch.Section 2",
+      "flat_smooth_9_punch.Section 3",
+      "shuttle frame",
+      "flat_smooth_9_die",
+      "flat_smooth_9_punch"
+    ],
+    "sim_id": "geom_0_9",
+    "batch": "A",
+    "run_used": "2025-08-31 15_41_00"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 000.Results\\2025-11-27 14_36_45\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "000 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_000_upper_closed.Section 1",
+      "composite_plate_000_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_000_upper_closed",
+      "composite_plate_000_lower_closed"
+    ],
+    "sim_id": "mold_set_000.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_36_45"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 001.Results\\2025-11-27 14_37_15\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "001 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_001_lower_closed.Section 1",
+      "composite_plate_001_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_001_lower_closed",
+      "composite_plate_001_upper_closed"
+    ],
+    "sim_id": "mold_set_001.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_37_15"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 002.Results\\2025-11-27 14_37_57\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "002 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_002_lower_closed.Section 1",
+      "composite_plate_002_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_002_lower_closed",
+      "composite_plate_002_upper_closed"
+    ],
+    "sim_id": "mold_set_002.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_37_57"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 004.Results\\2025-11-27 14_38_33\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "004 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_004_lower_closed.Section 1",
+      "composite_plate_004_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_004_lower_closed",
+      "composite_plate_004_upper_closed"
+    ],
+    "sim_id": "mold_set_004.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_38_33"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 006.Results\\2025-11-27 14_38_57\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "006 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_006_upper_closed.Section 1",
+      "composite_plate_006_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_006_upper_closed",
+      "composite_plate_006_lower_closed"
+    ],
+    "sim_id": "mold_set_006.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_38_57"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 008.Results\\2025-11-27 14_39_47\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "008 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_008_upper_closed.Section 1",
+      "composite_plate_008_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_008_upper_closed",
+      "composite_plate_008_lower_closed"
+    ],
+    "sim_id": "mold_set_008.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_39_47"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 010.Results\\2025-11-27 14_40_16\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "010 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_010_upper_closed.Section 1",
+      "composite_plate_010_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_010_upper_closed",
+      "composite_plate_010_lower_closed"
+    ],
+    "sim_id": "mold_set_010.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_40_16"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 011.Results\\2025-11-27 14_40_39\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "011 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_011_upper_closed.Section 1",
+      "composite_plate_011_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_011_upper_closed",
+      "composite_plate_011_lower_closed"
+    ],
+    "sim_id": "mold_set_011.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_40_39"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 012.Results\\2025-11-27 14_41_09\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "012 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_012_upper_closed.Section 1",
+      "composite_plate_012_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_012_upper_closed",
+      "composite_plate_012_lower_closed"
+    ],
+    "sim_id": "mold_set_012.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_41_09"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 013.Results\\2025-11-27 14_41_32\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "013 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_013_upper_closed.Section 1",
+      "composite_plate_013_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_013_upper_closed",
+      "composite_plate_013_lower_closed"
+    ],
+    "sim_id": "mold_set_013.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_41_32"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 014.Results\\2025-11-27 14_41_59\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "014 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_014_upper_closed.Section 1",
+      "composite_plate_014_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_014_upper_closed",
+      "composite_plate_014_lower_closed"
+    ],
+    "sim_id": "mold_set_014.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_41_59"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 015.Results\\2025-11-27 14_42_20\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "015 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_015_lower_closed.Section 1",
+      "composite_plate_015_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_015_lower_closed",
+      "composite_plate_015_upper_closed"
+    ],
+    "sim_id": "mold_set_015.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_42_20"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 016.Results\\2025-11-27 14_42_49\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "016 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_016_upper_closed.Section 1",
+      "composite_plate_016_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_016_upper_closed",
+      "composite_plate_016_lower_closed"
+    ],
+    "sim_id": "mold_set_016.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_42_49"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 017.Results\\2025-11-27 14_43_15\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "017 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_017_upper_closed.Section 1",
+      "composite_plate_017_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_017_upper_closed",
+      "composite_plate_017_lower_closed"
+    ],
+    "sim_id": "mold_set_017.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_43_15"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 019.Results\\2025-11-27 14_43_47\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "019 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_019_upper_closed.Section 1",
+      "composite_plate_019_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_019_upper_closed",
+      "composite_plate_019_lower_closed"
+    ],
+    "sim_id": "mold_set_019.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_43_47"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 020.Results\\2025-11-27 14_44_11\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "020 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_020_lower_closed.Section 1",
+      "composite_plate_020_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_020_lower_closed",
+      "composite_plate_020_upper_closed"
+    ],
+    "sim_id": "mold_set_020.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_44_11"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 021.Results\\2025-11-27 14_44_55\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "021 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_021_lower_closed.Section 1",
+      "composite_plate_021_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_021_lower_closed",
+      "composite_plate_021_upper_closed"
+    ],
+    "sim_id": "mold_set_021.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_44_55"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 022.Results\\2025-11-27 14_45_17\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "022 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_022_upper_closed.Section 1",
+      "composite_plate_022_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_022_upper_closed",
+      "composite_plate_022_lower_closed"
+    ],
+    "sim_id": "mold_set_022.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_45_17"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 023.Results\\2025-11-27 14_45_37\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "023 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_023_upper_closed.Section 1",
+      "composite_plate_023_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_023_upper_closed",
+      "composite_plate_023_lower_closed"
+    ],
+    "sim_id": "mold_set_023.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_45_37"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 024.Results\\2025-11-27 14_45_59\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "024 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_024_lower_closed.Section 1",
+      "composite_plate_024_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_024_lower_closed",
+      "composite_plate_024_upper_closed"
+    ],
+    "sim_id": "mold_set_024.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_45_59"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 025.Results\\2025-11-27 14_46_18\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "025 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_025_upper_closed.Section 1",
+      "composite_plate_025_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_025_upper_closed",
+      "composite_plate_025_lower_closed"
+    ],
+    "sim_id": "mold_set_025.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_46_18"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 028.Results\\2025-11-27 14_46_41\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "028 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_028_upper_closed.Section 1",
+      "composite_plate_028_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_028_upper_closed",
+      "composite_plate_028_lower_closed"
+    ],
+    "sim_id": "mold_set_028.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_46_41"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 029.Results\\2025-11-27 14_47_04\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "029 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_029_upper_closed.Section 1",
+      "composite_plate_029_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_029_upper_closed",
+      "composite_plate_029_lower_closed"
+    ],
+    "sim_id": "mold_set_029.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_47_04"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 030.Results\\2025-11-27 14_47_43\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "030 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_030_lower_closed.Section 1",
+      "composite_plate_030_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_030_lower_closed",
+      "composite_plate_030_upper_closed"
+    ],
+    "sim_id": "mold_set_030.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_47_43"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 031.Results\\2025-11-27 14_48_04\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "031 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_031_lower_closed.Section 1",
+      "composite_plate_031_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_031_lower_closed",
+      "composite_plate_031_upper_closed"
+    ],
+    "sim_id": "mold_set_031.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_48_04"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 034.Results\\2025-11-27 14_48_22\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "034 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_034_upper_closed.Section 1",
+      "composite_plate_034_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_034_upper_closed",
+      "composite_plate_034_lower_closed"
+    ],
+    "sim_id": "mold_set_034.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_48_22"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 037.Results\\2025-11-27 14_48_49\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "037 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_037_upper_closed.Section 1",
+      "composite_plate_037_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_037_upper_closed",
+      "composite_plate_037_lower_closed"
+    ],
+    "sim_id": "mold_set_037.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_48_49"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 039.Results\\2025-11-27 14_49_09\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "039 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_039_upper_closed.Section 1",
+      "composite_plate_039_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_039_upper_closed",
+      "composite_plate_039_lower_closed"
+    ],
+    "sim_id": "mold_set_039.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_49_09"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 100.Results\\2025-11-27 14_49_27\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "100 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_000_upper_closed.Section 1",
+      "composite_plate_000_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_000_upper_closed",
+      "composite_plate_000_lower_closed"
+    ],
+    "sim_id": "mold_set_100.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_49_27"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 102.Results\\2025-11-27 14_49_44\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "102 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_002_upper_closed.Section 1",
+      "composite_plate_002_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_002_upper_closed",
+      "composite_plate_002_lower_closed"
+    ],
+    "sim_id": "mold_set_102.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_49_44"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 103.Results\\2025-11-27 14_50_03\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "103 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_003_upper_closed.Section 1",
+      "composite_plate_003_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_003_upper_closed",
+      "composite_plate_003_lower_closed"
+    ],
+    "sim_id": "mold_set_103.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_50_03"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 104.Results\\2025-11-27 14_50_22\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "104 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_004_lower_closed.Section 1",
+      "composite_plate_004_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_004_lower_closed",
+      "composite_plate_004_upper_closed"
+    ],
+    "sim_id": "mold_set_104.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_50_22"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 105.Results\\2025-11-27 14_50_50\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "105 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_005_upper_closed.Section 1",
+      "composite_plate_005_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_005_upper_closed",
+      "composite_plate_005_lower_closed"
+    ],
+    "sim_id": "mold_set_105.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_50_50"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 106.Results\\2025-11-27 14_51_10\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "106 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_006_upper_closed.Section 1",
+      "composite_plate_006_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_006_upper_closed",
+      "composite_plate_006_lower_closed"
+    ],
+    "sim_id": "mold_set_106.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_51_10"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 107.Results\\2025-11-27 14_51_39\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "107 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_007_upper_closed.Section 1",
+      "composite_plate_007_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_007_upper_closed",
+      "composite_plate_007_lower_closed"
+    ],
+    "sim_id": "mold_set_107.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_51_39"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 108.Results\\2025-11-27 14_52_00\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "108 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_008_upper_closed.Section 1",
+      "composite_plate_008_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_008_upper_closed",
+      "composite_plate_008_lower_closed"
+    ],
+    "sim_id": "mold_set_108.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_52_00"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 111.Results\\2025-11-27 14_52_18\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "111 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_011_lower_closed.Section 1",
+      "composite_plate_011_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_011_lower_closed",
+      "composite_plate_011_upper_closed"
+    ],
+    "sim_id": "mold_set_111.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_52_18"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 112.Results\\2025-11-27 14_52_34\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "112 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_012_upper_closed.Section 1",
+      "composite_plate_012_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_012_upper_closed",
+      "composite_plate_012_lower_closed"
+    ],
+    "sim_id": "mold_set_112.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_52_34"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 113.Results\\2025-11-27 14_52_53\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "113 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_013_lower_closed.Section 1",
+      "composite_plate_013_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_013_lower_closed",
+      "composite_plate_013_upper_closed"
+    ],
+    "sim_id": "mold_set_113.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_52_53"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 114.Results\\2025-11-27 18_55_51\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "114 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_014_upper_closed.Section 1",
+      "composite_plate_014_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_014_upper_closed",
+      "composite_plate_014_lower_closed"
+    ],
+    "sim_id": "mold_set_114.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 18_55_51"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 115.Results\\2025-11-27 14_53_31\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "115 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_015_upper_closed.Section 1",
+      "composite_plate_015_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_015_upper_closed",
+      "composite_plate_015_lower_closed"
+    ],
+    "sim_id": "mold_set_115.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_53_31"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 116.Results\\2025-11-27 14_53_49\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "116 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_016_upper_closed.Section 1",
+      "composite_plate_016_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_016_upper_closed",
+      "composite_plate_016_lower_closed"
+    ],
+    "sim_id": "mold_set_116.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_53_49"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 117.Results\\2025-11-27 14_54_15\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "117 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_017_upper_closed.Section 1",
+      "composite_plate_017_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_017_upper_closed",
+      "composite_plate_017_lower_closed"
+    ],
+    "sim_id": "mold_set_117.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_54_15"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 118.Results\\2025-11-27 14_54_40\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "118 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_018_lower_closed.Section 1",
+      "composite_plate_018_upper_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_018_lower_closed",
+      "composite_plate_018_upper_closed"
+    ],
+    "sim_id": "mold_set_118.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_54_40"
+  },
+  {
+    "afi_path": "C:\\Users\\ellis\\Documents\\VS Code\\CFWrinklePredict2\\data\\simulation_batch_271125\\mold set 119.Results\\2025-11-27 14_54_58\\model.afi",
+    "parse_status": "partial",
+    "parse_notes": "Missing: ['punch_stroke_loadset1_mm', 'punch_stroke_total_mm', 'blank_initial_temp_C']",
+    "geometry_name": "119 .5mm",
+    "punch_stroke_loadset1_mm": null,
+    "punch_stroke_loadset2_mm": null,
+    "punch_stroke_total_mm": null,
+    "n_plies": 3,
+    "ply_orientations_deg": [
+      0.0,
+      90.0,
+      90.0
+    ],
+    "ply_thickness_afi_mm": 0.85,
+    "tool_temp_die_C": 180,
+    "tool_temp_punch_C": null,
+    "blank_initial_temp_C": null,
+    "n_loadsets": 2,
+    "solve_increments": [
+      30,
+      10
+    ],
+    "solve_dt": [
+      0.1,
+      6.0
+    ],
+    "tool_names": [
+      "shuttle frame.Section 1",
+      "composite_plate_019_upper_closed.Section 1",
+      "composite_plate_019_lower_closed.Section 1",
+      "shuttle frame",
+      "composite_plate_019_upper_closed",
+      "composite_plate_019_lower_closed"
+    ],
+    "sim_id": "mold_set_119.Results",
+    "batch": "B",
+    "run_used": "2025-11-27 14_54_58"
+  }
+]

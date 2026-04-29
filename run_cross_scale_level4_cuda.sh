@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Track C — CUDA variant: RTX Pro 6000 Blackwell, 96 GB GDDR7, 188 GB DDR5
-# Target: RunPod CUDA instance (sm_100 / Blackwell). DO NOT use on ROCm/AMD.
+# Target: RTX Pro 6000 Blackwell (sm_122, CC 12.2) on Verda. DO NOT use on ROCm/AMD.
+# Handles 1 or 2 GPUs automatically: single GPU runs all 5 folds serially;
+# dual GPU splits folds 0,2,4 → GPU 0 and folds 1,3 → GPU 1 in parallel (~1.67× speedup).
 #
 # Tuned for 96 GB GDDR7 vs 7900 XT 7900 XT 20 GB:
 #   hidden_dim    64  → 96    (no HSA pool limit; ~42 GB VRAM without grad checkpoint)
@@ -31,7 +33,7 @@ TEMPORAL_STRATEGY="${TEMPORAL_STRATEGY:-tail}"
 DEVICE="${DEVICE:-cuda}"
 AUTO_RESUME="${AUTO_RESUME:-1}"
 
-# ── Blackwell hardware config (sm_100, 96 GB GDDR7, 188 GB DDR5) ─────────────
+# ── Blackwell hardware config (sm_122, 96 GB GDDR7 per device, 188 GB DDR5) ──
 MAX_TIMESTEPS="${MAX_TIMESTEPS:-128}"
 ATTN_BATCH_NODES="${ATTN_BATCH_NODES:-1024}"    # Blackwell 184 SMs; 512 was RDNA3-specific
 DECODER_CHUNK_T="${DECODER_CHUNK_T:-24}"         # 96 GB headroom allows longer GRU chunks
@@ -112,14 +114,21 @@ export CFWRINKLE_PHYSICS_WARMUP_EPOCHS CFWRINKLE_PHYSICS_RAMP_EPOCHS
 export CFWRINKLE_FINE_DZ_WEIGHT
 export WP2_H5 WP3_H5
 
-if [[ "$AUTO_RESUME" == "1" && -f "$RUN_DIR/fold_0/latest.pt" ]]; then
-  RESUME=1
+if [[ "$AUTO_RESUME" == "1" ]]; then
+  # Scan all fold directories — not just fold_0.
+  # Dual-GPU runs may complete fold_1/fold_3 (GPU 1) before fold_0 writes its
+  # first checkpoint (GPU 0), so checking only fold_0 would miss existing work.
+  for _fold_check in 0 1 2 3 4; do
+    if [[ -f "$RUN_DIR/fold_${_fold_check}/latest.pt" ]]; then
+      RESUME=1
+      break
+    fi
+  done
 fi
 
 CMD=(
   python -u -m training.train
   --model-type cross-scale
-  --all-folds
   --epochs "$EPOCHS"
   --hidden-dim "$HIDDEN_DIM"
   --attn-batch-nodes "$ATTN_BATCH_NODES"
@@ -149,9 +158,14 @@ fi
 CMD+=(--no-checkpoint)
 # Preload ON: 188 GB DDR5 handles Batch B 30k-node × 40 sims × T=128 ≈ 41 GB RAM.
 
+# ── Detect available GPUs ─────────────────────────────────────────────────────
+N_GPUS=$(python3 -c "import torch; print(torch.cuda.device_count())" 2>/dev/null || echo "1")
+[[ "$N_GPUS" =~ ^[1-9][0-9]*$ ]] || N_GPUS=1  # guard against non-integer output
+
 echo "=== Track C CUDA (cross-scale full CV, fine_mp=ON, compile=ON, no-checkpoint) ===" | tee "$LOG_PATH"
 echo "Run dir:       $RUN_DIR" | tee -a "$LOG_PATH"
 echo "Gate report:   $REPORT_PATH" | tee -a "$LOG_PATH"
+echo "GPUs:          $N_GPUS" | tee -a "$LOG_PATH"
 echo "Resume:        $RESUME" | tee -a "$LOG_PATH"
 echo "hidden_dim:    $HIDDEN_DIM" | tee -a "$LOG_PATH"
 echo "T:             $MAX_TIMESTEPS" | tee -a "$LOG_PATH"
@@ -163,13 +177,69 @@ echo "fine_dz wt:    $CFWRINKLE_FINE_DZ_WEIGHT" | tee -a "$LOG_PATH"
 echo "loss chunk:    $CFWRINKLE_FINE_LOSS_CHUNK_ELEMS elems" | tee -a "$LOG_PATH"
 echo "physics ramp:  warmup=$CFWRINKLE_PHYSICS_WARMUP_EPOCHS ramp=$CFWRINKLE_PHYSICS_RAMP_EPOCHS" | tee -a "$LOG_PATH"
 echo "triton cache:  $TRITON_CACHE_DIR" | tee -a "$LOG_PATH"
-set +e
-"${CMD[@]}" 2>&1 | tee -a "$LOG_PATH"
-train_rc=${PIPESTATUS[0]}
-set -e
-if [[ $train_rc -ne 0 ]]; then
-  echo "Training failed (exit $train_rc). See $LOG_PATH"
-  exit $train_rc
+
+if [[ "$N_GPUS" -ge 2 ]]; then
+  # ── Dual-GPU mode ───────────────────────────────────────────────────────────
+  # Each GPU runs its fold subset sequentially. The two subsets run in parallel.
+  #   GPU 0: folds 0,2,4  (3 folds — bounds wall-clock; ~3 × epoch_time)
+  #   GPU 1: folds 1,3    (2 folds — finishes first, then idles)
+  # CUDA_VISIBLE_DEVICES restricts each subprocess to one physical GPU;
+  # both see it as cuda:0 — no code changes required in train.py.
+  # Triton compiles are per-GPU but share the same cache directory (read-safe on NVMe).
+  echo "Dual-GPU mode: GPU 0 → folds 0,2,4 | GPU 1 → folds 1,3 (~1.67× speedup)" | tee -a "$LOG_PATH"
+  LOG_GPU0="${RUN_DIR}/run_gpu0.log"
+  LOG_GPU1="${RUN_DIR}/run_gpu1.log"
+
+  set +e
+  CUDA_VISIBLE_DEVICES=0 "${CMD[@]}" --folds 0,2,4 2>&1 | tee -a "$LOG_GPU0" &
+  PID0=$!
+  CUDA_VISIBLE_DEVICES=1 "${CMD[@]}" --folds 1,3   2>&1 | tee -a "$LOG_GPU1" &
+  PID1=$!
+
+  wait $PID0; rc0=$?
+  wait $PID1; rc1=$?
+  set -e
+
+  if [[ $rc0 -ne 0 || $rc1 -ne 0 ]]; then
+    echo "Training failed — GPU 0 exit=$rc0, GPU 1 exit=$rc1" | tee -a "$LOG_PATH"
+    echo "  GPU 0 log: $LOG_GPU0"
+    echo "  GPU 1 log: $LOG_GPU1"
+    exit 1
+  fi
+
+  # Both GPU processes skip writing summary.json to avoid a write race.
+  # Merge fold histories into a single top-level summary after both complete.
+  python3 - <<PYMERGE
+import json, pathlib
+run_dir = pathlib.Path("$RUN_DIR")
+results = []
+for fold in range(5):
+    history_path = run_dir / f"fold_{fold}" / "history.json"
+    if history_path.exists():
+        with open(history_path) as f:
+            history = json.load(f)
+        last = history[-1] if history else {}
+        results.append({
+            "fold": fold,
+            "best_val_loss": last.get("best_val_loss"),
+            "epochs_trained": len(history),
+        })
+with open(run_dir / "summary.json", "w") as f:
+    json.dump(results, f, indent=2)
+print(f"summary.json merged: {len(results)} folds")
+PYMERGE
+
+else
+  # ── Single-GPU mode ─────────────────────────────────────────────────────────
+  echo "Single-GPU mode: folds 0-4 sequential on cuda:0" | tee -a "$LOG_PATH"
+  set +e
+  CUDA_VISIBLE_DEVICES=0 "${CMD[@]}" --all-folds 2>&1 | tee -a "$LOG_PATH"
+  train_rc=${PIPESTATUS[0]}
+  set -e
+  if [[ $train_rc -ne 0 ]]; then
+    echo "Training failed (exit $train_rc). See $LOG_PATH"
+    exit $train_rc
+  fi
 fi
 
 python -m training.gate_check \

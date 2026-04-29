@@ -11,8 +11,10 @@ __pycache__/
 venv/
 env/
 
-# Generated reports (large JSON)
+# Generated reports (large JSON) — input_param_registry.json exempted:
+# build_features.py reads it at runtime; must survive a fresh git clone.
 reports/*.json
+!reports/input_param_registry.json
 
 # HDF5 dataset (large binary)
 data/dataset.h5
