@@ -500,10 +500,17 @@ RTX Pro 6000 (or vice versa) requires no flags beyond `--allow-resume-mismatch`,
 `AUTO_RESUME` already passes. The model weights, optimizer state, and epoch counter are
 fully portable across GPU types.
 
-**B300 single-GPU expected timeline:** With 4× larger attention batches and 2.7× longer
-decoder chunks, per-epoch compute is more efficient — but the B300's larger HBM3e
-bandwidth partially offsets the higher per-batch cost. Estimated wall-clock: 8–14 hr
-(5 folds, sequential), comparable to RTX Pro 6000 at higher absolute throughput.
+**B300 parallel fold execution:** The script automatically launches two processes on the
+same physical device (`CUDA_VISIBLE_DEVICES=0` for both), identical to the dual-RTX
+fold split (folds 0,2,4 ∥ folds 1,3). CUDA allows multiple process contexts on one
+device; the driver multiplexes SM access. Fold directories are disjoint so there are
+no write conflicts. Expected wall-clock: ~6–9 hr (same ~1.67× speedup as 2× RTX Pro 6000).
+
+Estimated concurrent VRAM: ~50–65 GB × 2 processes = ~100–130 GB out of 262 GB.
+If both processes peak simultaneously at their worst case (~80 GB each = 160 GB /
+262 GB = 61%), the CUDA allocator's `garbage_collection_threshold:0.9` will not
+trigger GC until 90% full — ample headroom. Set `B300_PARALLEL=0` to disable and
+fall back to sequential `--all-folds` if OOM or debugging single-fold behaviour.
 
 **Cost note:** At €2.45/hr vs €0.59/hr, a full 10-hr B300 run costs ~€25 vs ~€6.
 Use the B300 only when RTX Pro 6000 spot capacity is genuinely unavailable.

@@ -185,17 +185,25 @@ if [[ "$GPU_VRAM_GB" -ge 200 ]]; then
     [[ "$_USER_ATTN"      ]] || ATTN_BATCH_NODES=4096
     [[ "$_USER_CHUNK_T"   ]] || DECODER_CHUNK_T=64
     [[ "$_USER_FINE_LOSS" ]] || CFWRINKLE_FINE_LOSS_CHUNK_ELEMS=8192
+    # Parallel fold mode: 2 processes, both on CUDA_VISIBLE_DEVICES=0.
+    # 262 GB HBM3e holds 2 concurrent processes (~50-65 GB each sustained).
+    # Disable with B300_PARALLEL=0 if OOM or debugging single-fold.
+    _B300_PARALLEL=1
+    [[ "${B300_PARALLEL:-1}" == "0" ]] && _B300_PARALLEL=0
 elif [[ "$GPU_VRAM_GB" -ge 80 ]]; then
     GPU_TIER="RTX-Pro-6000 (${GPU_VRAM_GB} GB GDDR7)"
+    _B300_PARALLEL=0
 else
     GPU_TIER="unknown (${GPU_VRAM_GB} GB)"
+    _B300_PARALLEL=0
 fi
 
 echo "=== Track C CUDA (cross-scale full CV, fine_mp=ON, compile=ON, no-checkpoint) ===" | tee "$LOG_PATH"
 echo "Run dir:       $RUN_DIR" | tee -a "$LOG_PATH"
 echo "Gate report:   $REPORT_PATH" | tee -a "$LOG_PATH"
 echo "GPUs:          $N_GPUS" | tee -a "$LOG_PATH"
-echo "GPU tier:      $GPU_TIER" | tee -a "$LOG_PATH"
+_B300_NOTE=""; [[ "$_B300_PARALLEL" == "1" ]] && _B300_NOTE="  (parallel folds; B300_PARALLEL=0 to disable)"
+echo "GPU tier:      ${GPU_TIER}${_B300_NOTE}" | tee -a "$LOG_PATH"
 echo "Resume:        $RESUME" | tee -a "$LOG_PATH"
 echo "hidden_dim:    $HIDDEN_DIM" | tee -a "$LOG_PATH"
 echo "T:             $MAX_TIMESTEPS" | tee -a "$LOG_PATH"
@@ -239,6 +247,53 @@ if [[ "$N_GPUS" -ge 2 ]]; then
 
   # Both GPU processes skip writing summary.json to avoid a write race.
   # Merge fold histories into a single top-level summary after both complete.
+  python3 - <<PYMERGE
+import json, pathlib
+run_dir = pathlib.Path("$RUN_DIR")
+results = []
+for fold in range(5):
+    history_path = run_dir / f"fold_{fold}" / "history.json"
+    if history_path.exists():
+        with open(history_path) as f:
+            history = json.load(f)
+        last = history[-1] if history else {}
+        results.append({
+            "fold": fold,
+            "best_val_loss": last.get("best_val_loss"),
+            "epochs_trained": len(history),
+        })
+with open(run_dir / "summary.json", "w") as f:
+    json.dump(results, f, indent=2)
+print(f"summary.json merged: {len(results)} folds")
+PYMERGE
+
+elif [[ "$_B300_PARALLEL" == "1" ]]; then
+  # ── B300 parallel mode ──────────────────────────────────────────────────────
+  # Both processes target CUDA_VISIBLE_DEVICES=0 (same physical B300 GPU).
+  # CUDA allows multiple processes on one device; the driver multiplexes contexts.
+  # Fold directories are disjoint (fold_0/2/4 vs fold_1/3) — no write conflicts.
+  echo "B300 parallel mode: 2 processes on cuda:0, folds 0,2,4 ∥ 1,3 (~1.67× speedup)" | tee -a "$LOG_PATH"
+  LOG_PROC0="${RUN_DIR}/run_proc0.log"
+  LOG_PROC1="${RUN_DIR}/run_proc1.log"
+
+  set +e
+  CUDA_VISIBLE_DEVICES=0 "${CMD[@]}" --folds 0,2,4 2>&1 | tee -a "$LOG_PROC0" &
+  PID0=$!
+  CUDA_VISIBLE_DEVICES=0 "${CMD[@]}" --folds 1,3   2>&1 | tee -a "$LOG_PROC1" &
+  PID1=$!
+
+  wait $PID0; rc0=$?
+  wait $PID1; rc1=$?
+  set -e
+
+  if [[ $rc0 -ne 0 || $rc1 -ne 0 ]]; then
+    echo "Training failed — proc 0 exit=$rc0, proc 1 exit=$rc1" | tee -a "$LOG_PATH"
+    echo "  proc 0 log: $LOG_PROC0"
+    echo "  proc 1 log: $LOG_PROC1"
+    echo "  If OOM: set B300_PARALLEL=0 or reduce ATTN_BATCH_NODES (e.g. ATTN_BATCH_NODES=2048)"
+    exit 1
+  fi
+
   python3 - <<PYMERGE
 import json, pathlib
 run_dir = pathlib.Path("$RUN_DIR")

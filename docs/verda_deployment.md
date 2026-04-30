@@ -180,12 +180,14 @@ hyperparameters automatically — no flags or config changes needed when switchi
 |---|---|---|---|
 | RTX Pro 6000 Blackwell (primary) | 96 GB GDDR7 | ~€0.59/hr spot | ATTN=1024, CHUNK_T=24, FINE_LOSS=2048 |
 | RTX Pro 6000 × 2 (primary) | 2 × 96 GB | ~€1.18/hr spot | Dual-GPU fold split, ~1.67× speedup |
-| B300 data-centre Blackwell (fallback) | 262 GB HBM3e | ~€2.45/hr | ATTN=4096, CHUNK_T=64, FINE_LOSS=8192 |
+| B300 data-centre Blackwell (fallback) | 262 GB HBM3e | ~€2.45/hr | ATTN=4096, CHUNK_T=64, FINE_LOSS=8192; **parallel fold mode auto-enabled** |
 
-> **B300 note:** When VRAM ≥ 200 GB is detected, the script upgrades batch and chunk sizes
-> to fill the extra headroom. `hidden_dim`, `T`, and model architecture are unchanged,
-> keeping results directly comparable with Track B/C. Single-GPU only — no second B300 needed.
-> Override any auto-scaled value via the same env vars (e.g. `ATTN_BATCH_NODES=2048`).
+> **B300 note:** When VRAM ≥ 200 GB is detected, the script (a) upgrades batch and chunk
+> sizes to fill the extra headroom, and (b) automatically runs two parallel fold processes
+> on the same device (folds 0,2,4 ∥ 1,3), giving the same ~1.67× speedup as 2× RTX Pro 6000.
+> `hidden_dim`, `T`, and model architecture are unchanged. Set `B300_PARALLEL=0` to force
+> sequential if debugging or if VRAM is unexpectedly tight. Override any auto-scaled value
+> via env vars (e.g. `ATTN_BATCH_NODES=2048`).
 
 ### Launch a GPU spot instance
 
@@ -273,8 +275,8 @@ flags or config changes needed:
 | 2 GPUs | 1 GPU available | `--all-folds --resume`. Completed folds finish in < 1 min. |
 | 1 GPU | 2 GPUs available | Dual-GPU split; already-complete folds resume in < 1 min each. |
 | 2 GPUs | 2 GPUs available | Dual-GPU split as before; resumes each fold subset from checkpoint. |
-| RTX Pro 6000 (any) | B300 | Single-GPU `--all-folds --resume`. ATTN/chunk auto-scaled up to B300 defaults; model weights fully compatible. |
-| B300 | RTX Pro 6000 | Single-GPU `--all-folds --resume`. ATTN/chunk auto-scaled down to 96 GB defaults; model weights fully compatible. |
+| RTX Pro 6000 (any) | B300 | B300 parallel mode (2 procs, same device). AUTO_RESUME detects all fold checkpoints; ATTN/chunk auto-scaled up. Model weights compatible. |
+| B300 | RTX Pro 6000 | `--all-folds --resume` (1 GPU sequential) or dual-GPU split if 2× available. ATTN/chunk auto-scaled down to 96 GB defaults. |
 
 The resume scan covers all five fold directories (`fold_0` through `fold_4`), so
 partial progress from either GPU in a prior 2-GPU run is detected even if `fold_0`
