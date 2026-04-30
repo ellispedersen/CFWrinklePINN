@@ -114,6 +114,11 @@ Verda AI (FIN-03 Finland) adds spot persistence: `on_spot_discontinue: keep_deta
 retains the NVMe block volume across instance evictions [5], making spot pricing safe
 when combined with atomic checkpointing (see §3.2).
 
+If RTX Pro 6000 spot capacity is unavailable, the B300 data-centre Blackwell GPU
+(sm_10x, 262 GB HBM3e, ~€2.45/hr) is the documented fallback — see §9.5 and
+`docs/verda_deployment.md` §3 for the GPU selection table. Batch/chunk parameters
+scale automatically; model architecture and checkpoint format are unchanged.
+
 ---
 
 ## 2. Track C vs Track B Configuration
@@ -430,10 +435,12 @@ Batch B data (~41 GB per process × 2) requires ~82 GB total, well within
 
 ### Resume after eviction (dual-GPU)
 
-`AUTO_RESUME=1` checks for `fold_0/latest.pt`. If present, `RESUME=1` is set and
-both GPU subprocesses receive `--resume --allow-resume-mismatch`. Each process
-resumes only its assigned folds; already-complete folds (epoch == `--epochs`)
-complete in < 1 min (zero training epochs, gate metrics read from `history.json`).
+`AUTO_RESUME=1` scans all five fold directories (`fold_0` through `fold_4`) for
+`latest.pt`. The scan covers all folds because in a 2-GPU run GPU 1 (folds 1, 3)
+may complete before GPU 0 writes its first checkpoint for fold_0. If any
+`fold_N/latest.pt` is found, `RESUME=1` is set and all GPU subprocesses receive
+`--resume --allow-resume-mismatch`. Already-complete folds (epoch == `--epochs`)
+return in < 1 min (zero training epochs; gate metrics read from `history.json`).
 
 ### Transitioning between GPU counts mid-training
 
@@ -461,6 +468,45 @@ by kernel shape + device capability; sm_122 GPUs produce identical kernel hashes
 Concurrent autotuning on first run is safe — Triton uses file-level locking [4].
 After the first fold on either GPU has compiled, subsequent folds on both GPUs
 reuse the cached kernels.
+
+### 9.5 VRAM-adaptive parameter scaling (B300 fallback)
+
+When the RTX Pro 6000 Blackwell (spot) is unavailable, the B300 data-centre Blackwell
+(sm_10x, 262 GB HBM3e, ~€2.45/hr) is the recommended fallback. `run_cross_scale_level4_cuda.sh`
+detects VRAM at startup and scales batch/chunk sizes automatically:
+
+| Parameter | RTX Pro 6000 (96 GB) | B300 (262 GB) | Scale factor |
+|---|---|---|---|
+| `ATTN_BATCH_NODES` | 1024 | 4096 | 4× |
+| `DECODER_CHUNK_T` | 24 | 64 | 2.7× |
+| `CFWRINKLE_FINE_LOSS_CHUNK_ELEMS` | 2048 | 8192 | 4× |
+| `hidden_dim` | 96 | 96 | unchanged |
+| `MAX_TIMESTEPS` | 128 | 128 | unchanged |
+| `AMP_DTYPE` | bfloat16 | bfloat16 | unchanged |
+
+Detection is VRAM-threshold based (not compute capability):
+- VRAM ≥ 200 GB → B300 tier
+- VRAM ≥ 80 GB → RTX Pro 6000 tier
+- VRAM < 80 GB → conservative fallback (ATTN=512, CHUNK_T=12)
+
+Any auto-scaled value can be overridden by exporting the env var before calling the
+script (e.g. `ATTN_BATCH_NODES=2048 bash run_cross_scale_level4_cuda.sh`). The
+`${VAR+set}` check captures only vars that were exported by the caller, so the
+auto-scaling is skipped only for those that were explicitly set.
+
+**Checkpoint compatibility:** batch/chunk sizes are runtime performance parameters and
+are not serialised into checkpoint files. Resuming a B300-trained checkpoint on an
+RTX Pro 6000 (or vice versa) requires no flags beyond `--allow-resume-mismatch`, which
+`AUTO_RESUME` already passes. The model weights, optimizer state, and epoch counter are
+fully portable across GPU types.
+
+**B300 single-GPU expected timeline:** With 4× larger attention batches and 2.7× longer
+decoder chunks, per-epoch compute is more efficient — but the B300's larger HBM3e
+bandwidth partially offsets the higher per-batch cost. Estimated wall-clock: 8–14 hr
+(5 folds, sequential), comparable to RTX Pro 6000 at higher absolute throughput.
+
+**Cost note:** At €2.45/hr vs €0.59/hr, a full 10-hr B300 run costs ~€25 vs ~€6.
+Use the B300 only when RTX Pro 6000 spot capacity is genuinely unavailable.
 
 ---
 

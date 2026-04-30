@@ -13,7 +13,7 @@
 | 0 — Infrastructure | Verda console only | 5 min | €0 |
 | 1 — WP3 CPU rebuild | CPU instance (any), FIN-03 | 3–4 hr | < €0.50 |
 | 2 — Build + push image | Local Docker | 20–30 min | €0 |
-| 3 — GPU training | RTX Pro 6000 spot, FIN-03 | ~10 hr | ~€6 |
+| 3 — GPU training | RTX Pro 6000 spot (or B300 fallback), FIN-03 | ~10 hr | ~€6 (RTX) / ~€25 (B300) |
 | NVMe volume (2 weeks) | — | — | ~€5 |
 
 Scripts involved:
@@ -171,13 +171,27 @@ Image contents: `pytorch/pytorch:2.11.0-cuda13.0-cudnn9-runtime` base + `h5py`, 
 
 ---
 
-## Phase 3 — GPU Training (RTX Pro 6000 Spot)
+## Phase 3 — GPU Training (RTX Pro 6000 Spot or B300 Fallback)
+
+`run_cross_scale_level4_cuda.sh` detects GPU count and VRAM at startup and scales
+hyperparameters automatically — no flags or config changes needed when switching GPU types.
+
+| GPU option | VRAM | Cost | Auto-configured params |
+|---|---|---|---|
+| RTX Pro 6000 Blackwell (primary) | 96 GB GDDR7 | ~€0.59/hr spot | ATTN=1024, CHUNK_T=24, FINE_LOSS=2048 |
+| RTX Pro 6000 × 2 (primary) | 2 × 96 GB | ~€1.18/hr spot | Dual-GPU fold split, ~1.67× speedup |
+| B300 data-centre Blackwell (fallback) | 262 GB HBM3e | ~€2.45/hr | ATTN=4096, CHUNK_T=64, FINE_LOSS=8192 |
+
+> **B300 note:** When VRAM ≥ 200 GB is detected, the script upgrades batch and chunk sizes
+> to fill the extra headroom. `hidden_dim`, `T`, and model architecture are unchanged,
+> keeping results directly comparable with Track B/C. Single-GPU only — no second B300 needed.
+> Override any auto-scaled value via the same env vars (e.g. `ATTN_BATCH_NODES=2048`).
 
 ### Launch a GPU spot instance
 
 - **OS image:** `ubuntu-24.04-cuda-13.0-open-docker`
-  *(Ubuntu 24.04, CUDA 13.0, open kernel modules for sm_122, Docker pre-installed)*
-- **GPU:** RTX Pro 6000 Blackwell (spot), FIN-03 — 1 or 2 units; script adapts automatically
+  *(Ubuntu 24.04, CUDA 13.0, open kernel modules for sm_12x / sm_10x, Docker pre-installed)*
+- **GPU:** RTX Pro 6000 Blackwell (spot), FIN-03 — 1 or 2 units; or 1× B300 as fallback
 - **`on_spot_discontinue`:** `keep_detached` ← **set this at creation**
 - **Storage:** Attach `cfwrinkle-data` volume
 - **Startup script:** Paste `scripts/verda_gpu_setup.sh`
@@ -259,6 +273,8 @@ flags or config changes needed:
 | 2 GPUs | 1 GPU available | `--all-folds --resume`. Completed folds finish in < 1 min. |
 | 1 GPU | 2 GPUs available | Dual-GPU split; already-complete folds resume in < 1 min each. |
 | 2 GPUs | 2 GPUs available | Dual-GPU split as before; resumes each fold subset from checkpoint. |
+| RTX Pro 6000 (any) | B300 | Single-GPU `--all-folds --resume`. ATTN/chunk auto-scaled up to B300 defaults; model weights fully compatible. |
+| B300 | RTX Pro 6000 | Single-GPU `--all-folds --resume`. ATTN/chunk auto-scaled down to 96 GB defaults; model weights fully compatible. |
 
 The resume scan covers all five fold directories (`fold_0` through `fold_4`), so
 partial progress from either GPU in a prior 2-GPU run is detected even if `fold_0`

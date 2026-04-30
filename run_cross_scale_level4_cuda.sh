@@ -26,6 +26,12 @@ WP3_H5="${WP3_H5:-$DATA_DIR/cfwrinkle_wp3_features.h5}"
 RUN_DIR="${RUN_DIR:-$CHECKPOINT_DIR/progressive/cross_scale_level4_cv_trackc_cuda}"
 REPORT_PATH="${REPORT_PATH:-$REPO_DIR/reports/wp7_gate_level4_cross_scale_trackc_cuda.json}"
 
+# Track which performance-sensitive vars the caller explicitly set.
+# B300 auto-scaling (applied after VRAM detection below) skips any that were pre-set.
+_USER_ATTN="${ATTN_BATCH_NODES+set}"
+_USER_CHUNK_T="${DECODER_CHUNK_T+set}"
+_USER_FINE_LOSS="${CFWRINKLE_FINE_LOSS_CHUNK_ELEMS+set}"
+
 # ── Training hyperparameters ──────────────────────────────────────────────────
 EPOCHS="${EPOCHS:-50}"
 HIDDEN_DIM="${HIDDEN_DIM:-96}"
@@ -33,10 +39,11 @@ TEMPORAL_STRATEGY="${TEMPORAL_STRATEGY:-tail}"
 DEVICE="${DEVICE:-cuda}"
 AUTO_RESUME="${AUTO_RESUME:-1}"
 
-# ── Blackwell hardware config (sm_122, 96 GB GDDR7 per device, 188 GB DDR5) ──
+# ── Blackwell hardware config — RTX Pro 6000 defaults; B300 overrides applied after GPU detection ──
+# RTX Pro 6000: sm_122, 96 GB GDDR7.   B300 fallback: sm_10x, 262 GB HBM3e (auto-scaled below).
 MAX_TIMESTEPS="${MAX_TIMESTEPS:-128}"
-ATTN_BATCH_NODES="${ATTN_BATCH_NODES:-1024}"    # Blackwell 184 SMs; 512 was RDNA3-specific
-DECODER_CHUNK_T="${DECODER_CHUNK_T:-24}"         # 96 GB headroom allows longer GRU chunks
+ATTN_BATCH_NODES="${ATTN_BATCH_NODES:-1024}"    # RTX Pro 6000 default; B300 auto → 4096
+DECODER_CHUNK_T="${DECODER_CHUNK_T:-24}"         # RTX Pro 6000 default; B300 auto → 64
 AMP_DTYPE="${AMP_DTYPE:-bfloat16}"              # Blackwell native; TF32 path for matmul
 FINE_FEATURE_NORMALIZE="${FINE_FEATURE_NORMALIZE:-1}"
 
@@ -50,7 +57,7 @@ CFWRINKLE_FINE_DZ_WEIGHT="${CFWRINKLE_FINE_DZ_WEIGHT:-4.0}"
 CFWRINKLE_PHYSICS_WARMUP_EPOCHS="${CFWRINKLE_PHYSICS_WARMUP_EPOCHS:-5}"
 CFWRINKLE_PHYSICS_RAMP_EPOCHS="${CFWRINKLE_PHYSICS_RAMP_EPOCHS:-15}"
 CFWRINKLE_FINE_ELEM_REGIONS="${CFWRINKLE_FINE_ELEM_REGIONS:-4}"
-CFWRINKLE_FINE_LOSS_CHUNK_ELEMS="${CFWRINKLE_FINE_LOSS_CHUNK_ELEMS:-2048}"
+CFWRINKLE_FINE_LOSS_CHUNK_ELEMS="${CFWRINKLE_FINE_LOSS_CHUNK_ELEMS:-2048}"  # RTX Pro 6000; B300 auto → 8192
 CFWRINKLE_AUX_LOSS_INTERVAL="${CFWRINKLE_AUX_LOSS_INTERVAL:-1}"
 CFWRINKLE_DISABLE_FINE_COHERENCE="${CFWRINKLE_DISABLE_FINE_COHERENCE:-0}"
 CFWRINKLE_DISABLE_FINE_COUPLING="${CFWRINKLE_DISABLE_FINE_COUPLING:-0}"
@@ -70,8 +77,8 @@ Key env overrides:
   VENV_PATH              (default: /workspace/venv)
   HIDDEN_DIM             (default: 96)
   MAX_TIMESTEPS          (default: 128)
-  ATTN_BATCH_NODES       (default: 1024; try 2048 if VRAM allows)
-  DECODER_CHUNK_T        (default: 24)
+  ATTN_BATCH_NODES       (default: 1024 RTX Pro 6000; auto 4096 on B300)
+  DECODER_CHUNK_T        (default: 24 RTX Pro 6000; auto 64 on B300)
   TORCH_COMPILE_MODE     (default: max-autotune; try reduce-overhead for short runs)
 EOF
 }
@@ -158,14 +165,37 @@ fi
 CMD+=(--no-checkpoint)
 # Preload ON: 188 GB DDR5 handles Batch B 30k-node × 40 sims × T=128 ≈ 41 GB RAM.
 
-# ── Detect available GPUs ─────────────────────────────────────────────────────
+# ── Detect available GPUs and VRAM tier ──────────────────────────────────────
 N_GPUS=$(python3 -c "import torch; print(torch.cuda.device_count())" 2>/dev/null || echo "1")
 [[ "$N_GPUS" =~ ^[1-9][0-9]*$ ]] || N_GPUS=1  # guard against non-integer output
+
+GPU_VRAM_GB=$(python3 -c "
+import torch, sys
+if not torch.cuda.is_available(): sys.exit(0)
+print(int(torch.cuda.get_device_properties(0).total_memory / 1024**3))
+" 2>/dev/null || echo "0")
+[[ "$GPU_VRAM_GB" =~ ^[0-9]+$ ]] || GPU_VRAM_GB=0
+
+# Adaptive hyperparameters: scale batch/chunk sizes to fill available VRAM.
+#   RTX Pro 6000 (96 GB GDDR7): defaults already set above.
+#   B300 data-centre Blackwell (262 GB HBM3e): 4× larger batches utilise the headroom.
+# Only overrides vars that were NOT explicitly exported by the caller.
+if [[ "$GPU_VRAM_GB" -ge 200 ]]; then
+    GPU_TIER="B300 (${GPU_VRAM_GB} GB HBM)"
+    [[ "$_USER_ATTN"      ]] || ATTN_BATCH_NODES=4096
+    [[ "$_USER_CHUNK_T"   ]] || DECODER_CHUNK_T=64
+    [[ "$_USER_FINE_LOSS" ]] || CFWRINKLE_FINE_LOSS_CHUNK_ELEMS=8192
+elif [[ "$GPU_VRAM_GB" -ge 80 ]]; then
+    GPU_TIER="RTX-Pro-6000 (${GPU_VRAM_GB} GB GDDR7)"
+else
+    GPU_TIER="unknown (${GPU_VRAM_GB} GB)"
+fi
 
 echo "=== Track C CUDA (cross-scale full CV, fine_mp=ON, compile=ON, no-checkpoint) ===" | tee "$LOG_PATH"
 echo "Run dir:       $RUN_DIR" | tee -a "$LOG_PATH"
 echo "Gate report:   $REPORT_PATH" | tee -a "$LOG_PATH"
 echo "GPUs:          $N_GPUS" | tee -a "$LOG_PATH"
+echo "GPU tier:      $GPU_TIER" | tee -a "$LOG_PATH"
 echo "Resume:        $RESUME" | tee -a "$LOG_PATH"
 echo "hidden_dim:    $HIDDEN_DIM" | tee -a "$LOG_PATH"
 echo "T:             $MAX_TIMESTEPS" | tee -a "$LOG_PATH"

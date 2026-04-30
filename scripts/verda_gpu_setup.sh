@@ -91,24 +91,33 @@ for gpu_idx in range(n_gpus):
     sm_maj, sm_min = torch.cuda.get_device_capability(gpu_idx)
 
     print(f"\n  --- GPU {gpu_idx} ---")
+    vram_gb = props.total_memory / 1024**3
+    # Tier by VRAM: B300 ≥ 200 GB HBM3e; RTX Pro 6000 ≥ 80 GB GDDR7.
+    if vram_gb >= 200:
+        gpu_tier = "B300"
+        matmul_threshold_ms = 3.0
+    elif vram_gb >= 80:
+        gpu_tier = "RTX-Pro-6000"
+        matmul_threshold_ms = 5.0
+    else:
+        gpu_tier = "other"
+        matmul_threshold_ms = 20.0
+
     print(f"  Name:      {props.name}")
-    print(f"  VRAM:      {props.total_memory / 1024**3:.1f} GB")
+    print(f"  VRAM:      {vram_gb:.1f} GB  [{gpu_tier}]")
     print(f"  SMs:       {props.multi_processor_count}")
     print(f"  Capability: sm_{sm_maj}{sm_min}", end="")
-    # RTX Pro 6000 Blackwell = sm_122 (GB202 die, CC 12.2).
-    # sm_10x = data centre B100/B200; sm_12x = consumer/prosumer Blackwell.
+    # sm_122 = RTX Pro 6000 Blackwell (GB202, CC 12.2) — primary target.
+    # sm_10x = B300/B200/B100 data-centre Blackwell — supported fallback.
     if sm_maj == 12:
-        print("  ← Blackwell GB202 (RTX Pro 6000 = sm_122) ✓")
+        print("  ← Blackwell GB202 (RTX Pro 6000) ✓")
     elif sm_maj == 10:
-        print("  ← Blackwell data centre (B100/B200)")
+        print("  ← Blackwell data-centre (B300/B200/B100) ✓")
     elif sm_maj == 9:
         print("  ← Hopper (H100/H200)")
     else:
         print("  ← unexpected architecture")
-
-    if sm_maj < 12:
-        print(f"  WARNING: expected sm_12x (Blackwell GB202), got sm_{sm_maj}{sm_min}")
-        print(f"           Verify instance type — training will still run but is not validated.")
+        print(f"  WARNING: expected sm_12x (RTX Pro 6000) or sm_10x (B300). Verify instance type.")
 
     assert torch.cuda.is_bf16_supported(), f"GPU {gpu_idx}: bfloat16 not supported"
 
@@ -116,7 +125,7 @@ for gpu_idx in range(n_gpus):
     print(f"  CUDA:      {cuda_ver}")
     print(f"  PyTorch:   {torch.__version__}")
 
-    # SDPA — PyTorch dispatches FA2-compatible kernels on sm_12x Blackwell.
+    # SDPA — PyTorch dispatches FA2-compatible kernels on sm_10x and sm_12x Blackwell.
     try:
         from torch.nn.attention import SDPBackend, sdpa_kernel
         with sdpa_kernel(SDPBackend.FLASH_ATTENTION):
@@ -126,7 +135,7 @@ for gpu_idx in range(n_gpus):
     except Exception as e:
         print(f"  SDPA Flash: {e} (will fall back to efficient/math kernel)")
 
-    # BF16 matmul timing — expect < 5 ms on RTX Pro 6000
+    # BF16 matmul timing — RTX Pro 6000 < 5 ms; B300 < 3 ms.
     a = torch.randn(4096, 4096, device=dev, dtype=torch.bfloat16)
     torch.cuda.synchronize(dev)
     t0 = time.time()
@@ -135,10 +144,10 @@ for gpu_idx in range(n_gpus):
     torch.cuda.synchronize(dev)
     elapsed_ms = (time.time() - t0) / 10 * 1000
     print(f"  BF16 matmul 4096×4096: {elapsed_ms:.1f} ms/call", end="")
-    if elapsed_ms < 5.0:
+    if elapsed_ms < matmul_threshold_ms:
         print("  ✓")
     else:
-        print("  (slower than expected — RTX Pro 6000 should be < 5 ms)")
+        print(f"  (slower than expected for {gpu_tier} — target < {matmul_threshold_ms:.0f} ms)")
 
 print("")
 print(f"  SMOKE TEST PASSED ({n_gpus} GPU{'s' if n_gpus > 1 else ''})")
