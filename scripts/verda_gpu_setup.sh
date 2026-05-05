@@ -29,7 +29,7 @@ echo ""
 echo "[1/4] Mounting NVMe volume..."
 
 if [[ -z "$VOLUME_DEVICE" ]]; then
-  for dev in /dev/nvme1n1 /dev/nvme0n1 /dev/vdb /dev/sdb /dev/xvdb; do
+  for dev in /dev/vda /dev/nvme1n1 /dev/nvme0n1 /dev/vdb /dev/sdb /dev/xvdb; do
     if [[ -b "$dev" ]]; then
       VOLUME_DEVICE="$dev"
       break
