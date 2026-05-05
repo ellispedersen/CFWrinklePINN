@@ -585,14 +585,17 @@ class WrinkleDataset(Dataset):
         std = np.where(std < 1e-8, 1.0, std).astype(np.float32)
         feat_mean = mean.astype(np.float32)
         feat_std = std.astype(np.float32)
-        with h5py.File(self.h5_path, "a") as f:
-            stats_grp = f.require_group("metadata/feature_stats")
-            if "feat_mean" in stats_grp:
-                del stats_grp["feat_mean"]
-            if "feat_std" in stats_grp:
-                del stats_grp["feat_std"]
-            stats_grp.create_dataset("feat_mean", data=feat_mean, compression="lzf")
-            stats_grp.create_dataset("feat_std", data=feat_std, compression="lzf")
+        try:
+            with h5py.File(self.h5_path, "a") as f:
+                stats_grp = f.require_group("metadata/feature_stats")
+                if "feat_mean" in stats_grp:
+                    del stats_grp["feat_mean"]
+                if "feat_std" in stats_grp:
+                    del stats_grp["feat_std"]
+                stats_grp.create_dataset("feat_mean", data=feat_mean, compression="lzf")
+                stats_grp.create_dataset("feat_std", data=feat_std, compression="lzf")
+        except BlockingIOError:
+            pass  # another parallel process holds the write lock; stats are in memory
         return {"feat_mean": feat_mean, "feat_std": feat_std}
 
 

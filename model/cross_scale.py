@@ -182,7 +182,7 @@ class CrossScaleNet(nn.Module):
                     _ea: torch.Tensor,
                     _me: torch.Tensor,
                 ) -> torch.Tensor:
-                    h = h_c[_mapped] * _valid
+                    h = h_c[_mapped] * _valid.to(dtype=h_c.dtype)
                     for mp_layer in self.fine_mp_layers:
                         h = mp_layer(h, _ei, _ea, _me)
                     return self.fine_head(h[_fe].mean(dim=1))
