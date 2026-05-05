@@ -57,7 +57,7 @@ if [[ ! -f "$VENV_DIR/bin/activate" ]]; then
   echo "  Created venv at $VENV_DIR"
 fi
 source "$VENV_DIR/bin/activate"
-pip install -q --no-cache-dir "h5py>=3.8" "numpy>=1.24" "scipy>=1.10" "tqdm>=4.65"
+pip install -q --no-cache-dir "h5py>=3.8" "numpy>=1.24" "scipy>=1.10" "tqdm>=4.65" "pyyaml>=6.0"
 echo "  Deps installed."
 echo ""
 
