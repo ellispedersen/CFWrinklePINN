@@ -182,10 +182,17 @@ class CrossScaleNet(nn.Module):
                     _ea: torch.Tensor,
                     _me: torch.Tensor,
                 ) -> torch.Tensor:
-                    h = h_c[_mapped] * _valid.to(dtype=h_c.dtype)
+                    # Disable autocast for indexing ops — torch.compile + inductor +
+                    # autocast has a known regression in 2.11 where IndexBackward
+                    # fails with "Unexpected floating ScalarType in autocast::prioritize".
+                    with torch.autocast("cuda", enabled=False):
+                        h = h_c.float()[_mapped] * _valid.float()
+                    h = h.to(dtype=h_c.dtype)
                     for mp_layer in self.fine_mp_layers:
                         h = mp_layer(h, _ei, _ea, _me)
-                    return self.fine_head(h[_fe].mean(dim=1))
+                    with torch.autocast("cuda", enabled=False):
+                        out = self.fine_head(h[_fe].float()).mean(dim=1)
+                    return out.to(dtype=h_c.dtype)
 
                 for t_local in range(chunk_t):
                     h_c = h_coarse_elem[t_local]  # (M_coarse, D)

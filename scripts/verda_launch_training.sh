@@ -46,6 +46,7 @@ echo ""
 # compilation (10-20 min first run) is cached across spot evictions.
 
 docker run --rm --gpus all \
+  -v "$VOLUME_ROOT/repo:/workspace/repo" \
   -v "$VOLUME_ROOT:/workspace/data_vol" \
   -v "$VOLUME_ROOT/checkpoints:/workspace/checkpoints" \
   -v "$VOLUME_ROOT/logs:/workspace/logs" \
@@ -60,6 +61,24 @@ docker run --rm --gpus all \
   -e REPORT_PATH=/workspace/checkpoints/progressive/cross_scale_level4_cv_trackc_verda/gate_report.json \
   -e TRITON_CACHE_DIR=/workspace/.triton_cache \
   -e PYTHONUNBUFFERED=1 \
+  -e USE_TORCH_COMPILE="${USE_TORCH_COMPILE:-1}" \
+  -e USE_GRAD_CHECKPOINT="${USE_GRAD_CHECKPOINT:-0}" \
+  -e HIDDEN_DIM="${HIDDEN_DIM:-96}" \
+  -e MAX_TIMESTEPS="${MAX_TIMESTEPS:-128}" \
+  -e EPOCHS="${EPOCHS:-50}" \
+  -e ATTN_BATCH_NODES="${ATTN_BATCH_NODES:-1024}" \
+  -e DECODER_CHUNK_T="${DECODER_CHUNK_T:-24}" \
+  -e AMP_DTYPE="${AMP_DTYPE:-bfloat16}" \
+  -e TORCH_COMPILE_MODE="${TORCH_COMPILE_MODE:-max-autotune}" \
+  -e AUTO_RESUME="${AUTO_RESUME:-1}" \
+  -e B300_PARALLEL="${B300_PARALLEL:-1}" \
+  -e CFWRINKLE_FINE_LOSS_CHUNK_ELEMS="${CFWRINKLE_FINE_LOSS_CHUNK_ELEMS:-2048}" \
+  -e CFWRINKLE_AUX_LOSS_INTERVAL="${CFWRINKLE_AUX_LOSS_INTERVAL:-1}" \
+  -e CFWRINKLE_FINE_DZ_WEIGHT="${CFWRINKLE_FINE_DZ_WEIGHT:-4.0}" \
+  -e CFWRINKLE_DISABLE_FINE_COHERENCE="${CFWRINKLE_DISABLE_FINE_COHERENCE:-0}" \
+  -e CFWRINKLE_DISABLE_FINE_COUPLING="${CFWRINKLE_DISABLE_FINE_COUPLING:-0}" \
+  -e CFWRINKLE_DISABLE_FINE_BUCKLING="${CFWRINKLE_DISABLE_FINE_BUCKLING:-0}" \
+  -e CFWRINKLE_DISABLE_FINE_DZ_MONO="${CFWRINKLE_DISABLE_FINE_DZ_MONO:-0}" \
   "$IMAGE" \
   bash /workspace/repo/run_cross_scale_level4_cuda.sh
 

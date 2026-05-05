@@ -159,10 +159,14 @@ fi
 if [[ "$USE_TORCH_COMPILE" == "1" ]]; then
   CMD+=(--torch-compile)
 fi
-# Gradient checkpointing OFF: 96 GB GDDR7 holds all T=128 × hidden_dim=96 fine activations (~42-55 GB).
-# The 7900 XT OOM'd at 18.78 GB (hidden_dim=64, T=96) without checkpointing. Scaling:
-#   (96/64)^2 × (128/96) × 18.78 ≈ 56 GB — within 96 GB with comfortable margin.
-CMD+=(--no-checkpoint)
+# Gradient checkpointing: OFF when fine_mp is compiled (inductor fuses activations, ~56 GB est.).
+# Must be ON when fine_mp compile is disabled (@torch.compiler.disable) — uncompiled activations
+# are not fused and exceed 94 GB. Override with USE_GRAD_CHECKPOINT=1.
+if [[ "${USE_GRAD_CHECKPOINT:-0}" == "1" ]]; then
+  CMD+=(--checkpoint)
+else
+  CMD+=(--no-checkpoint)
+fi
 # Preload ON: 188 GB DDR5 handles Batch B 30k-node × 40 sims × T=128 ≈ 41 GB RAM.
 
 # ── Detect available GPUs and VRAM tier ──────────────────────────────────────
