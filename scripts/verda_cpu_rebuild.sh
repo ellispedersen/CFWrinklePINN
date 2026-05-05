@@ -20,7 +20,7 @@
 set -euo pipefail
 
 # ── USER CONFIG — edit these two lines only ───────────────────────────────────
-GITHUB_TOKEN="ghp_REPLACE_ME"   # GitHub PAT with repo scope
+GITHUB_TOKEN="github_pat_REPLACE_ME"   # fine-grained PAT with Contents read access
 MOUNT_POINT="/mnt/data"          # match the mount path set in the Verda UI
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ echo ""
 # ── [2/6] Clone repo ──────────────────────────────────────────────────────────
 echo "[2/6] Cloning repo..."
 
-_CLONE_URL="${GITHUB_REPO/https:\/\//https:\/\/$GITHUB_TOKEN@}"
+_CLONE_URL="${GITHUB_REPO/https:\/\//https:\/\/x-access-token:$GITHUB_TOKEN@}"
 
 if [[ -d "$REPO_DIR/.git" ]]; then
   echo "  Repo already cloned — pulling latest."
