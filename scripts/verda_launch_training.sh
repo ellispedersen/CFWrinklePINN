@@ -61,7 +61,7 @@ docker run --rm --gpus all \
   -e TRITON_CACHE_DIR=/workspace/.triton_cache \
   -e PYTHONUNBUFFERED=1 \
   -e USE_TORCH_COMPILE="${USE_TORCH_COMPILE:-1}" \
-  -e USE_GRAD_CHECKPOINT="${USE_GRAD_CHECKPOINT:-0}" \
+  -e USE_GRAD_CHECKPOINT="${USE_GRAD_CHECKPOINT:-1}" \
   -e HIDDEN_DIM="${HIDDEN_DIM:-96}" \
   -e MAX_TIMESTEPS="${MAX_TIMESTEPS:-128}" \
   -e EPOCHS="${EPOCHS:-50}" \
