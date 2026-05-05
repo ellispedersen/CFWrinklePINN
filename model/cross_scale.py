@@ -8,6 +8,18 @@ from .layers import MaterialEncoder, MessagePassingLayer, TemporalAggregator
 from .labels import N_COARSE_TARGETS, N_FINE_TARGETS
 
 
+@torch.compiler.disable
+def _gather_coarse_to_fine(h_c: torch.Tensor, mapped: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
+    """Scatter coarse embeddings to fine nodes — eager mode avoids aot_autograd IndexBackward bug."""
+    return h_c[mapped] * valid.to(dtype=h_c.dtype)
+
+
+@torch.compiler.disable
+def _gather_fine_elems(h: torch.Tensor, fe: torch.Tensor) -> torch.Tensor:
+    """Gather fine element node embeddings — eager mode avoids aot_autograd IndexBackward bug."""
+    return h[fe]
+
+
 class CrossScaleNet(nn.Module):
     """Dual-mesh physics-informed GNN.
 
@@ -182,10 +194,10 @@ class CrossScaleNet(nn.Module):
                     _ea: torch.Tensor,
                     _me: torch.Tensor,
                 ) -> torch.Tensor:
-                    h = h_c[_mapped] * _valid.to(dtype=h_c.dtype)
+                    h = _gather_coarse_to_fine(h_c, _mapped, _valid)
                     for mp_layer in self.fine_mp_layers:
                         h = mp_layer(h, _ei, _ea, _me)
-                    return self.fine_head(h[_fe].mean(dim=1))
+                    return self.fine_head(_gather_fine_elems(h, _fe).mean(dim=1))
 
                 for t_local in range(chunk_t):
                     h_c = h_coarse_elem[t_local]  # (M_coarse, D)

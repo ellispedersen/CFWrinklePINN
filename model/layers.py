@@ -20,6 +20,12 @@ class MaterialEncoder(nn.Module):
         return self.net(material_card)
 
 
+@torch.compiler.disable
+def _gather_nodes(h: torch.Tensor, src: torch.Tensor, dst: torch.Tensor):
+    """Index gather in eager mode — avoids aot_autograd IndexBackward bug in PyTorch 2.11."""
+    return h[src], h[dst]
+
+
 class MessagePassingLayer(nn.Module):
     def __init__(self, hidden_dim: int, edge_dim: int = 4, material_dim: int = 32) -> None:
         super().__init__()
@@ -34,7 +40,6 @@ class MessagePassingLayer(nn.Module):
         )
         self.norm = nn.LayerNorm(hidden_dim)
 
-    @torch.compiler.disable
     def forward(
         self,
         h: torch.Tensor,
@@ -45,7 +50,8 @@ class MessagePassingLayer(nn.Module):
         src, dst = edge_index[0], edge_index[1]
         n_nodes = h.shape[0]
         mat = material_embed.unsqueeze(0).expand(src.shape[0], -1)
-        msg_input = torch.cat([h[src], h[dst], edge_attr, mat], dim=-1)
+        h_src, h_dst = _gather_nodes(h, src, dst)
+        msg_input = torch.cat([h_src, h_dst, edge_attr, mat], dim=-1)
         messages = self.message_fn(msg_input)
         if messages.dtype != h.dtype:
             messages = messages.to(dtype=h.dtype)
