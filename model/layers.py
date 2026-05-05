@@ -34,6 +34,7 @@ class MessagePassingLayer(nn.Module):
         )
         self.norm = nn.LayerNorm(hidden_dim)
 
+    @torch.compiler.disable
     def forward(
         self,
         h: torch.Tensor,
@@ -44,14 +45,8 @@ class MessagePassingLayer(nn.Module):
         src, dst = edge_index[0], edge_index[1]
         n_nodes = h.shape[0]
         mat = material_embed.unsqueeze(0).expand(src.shape[0], -1)
-        # Disable autocast for indexing — torch.compile + inductor + autocast has a
-        # known 2.11 regression where IndexBackward fails with "Unexpected floating
-        # ScalarType in autocast::prioritize".
-        with torch.autocast("cuda", enabled=False):
-            h_src = h[src].float()
-            h_dst = h[dst].float()
-            msg_input = torch.cat([h_src, h_dst, edge_attr.float(), mat.float()], dim=-1)
-        messages = self.message_fn(msg_input.to(dtype=h.dtype))
+        msg_input = torch.cat([h[src], h[dst], edge_attr, mat], dim=-1)
+        messages = self.message_fn(msg_input)
         if messages.dtype != h.dtype:
             messages = messages.to(dtype=h.dtype)
 

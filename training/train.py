@@ -264,6 +264,8 @@ def train_fold(
     use_scaler = use_amp and amp_dtype == torch.float16
     scaler = torch.amp.GradScaler("cuda", enabled=use_scaler) if device.type == "cuda" else None
     if config.get("torch_compile", False) and hasattr(torch, "compile"):
+        import torch._dynamo as _dynamo
+        _dynamo.config.capture_scalar_outputs = True
         import torch._inductor.config as _ind_cfg
         _is_rocm = hasattr(torch.version, "hip")
         _gemm_backends = _os.environ.get("INDUCTOR_GEMM_BACKENDS", "ATEN" if _is_rocm else "ATEN,TRITON")
