@@ -114,10 +114,11 @@ Verda AI (FIN-03 Finland) adds spot persistence: `on_spot_discontinue: keep_deta
 retains the NVMe block volume across instance evictions [5], making spot pricing safe
 when combined with atomic checkpointing (see §3.2).
 
-If RTX Pro 6000 spot capacity is unavailable, the B300 data-centre Blackwell GPU
-(sm_10x, 262 GB HBM3e, ~€2.45/hr) is the documented fallback — see §9.5 and
-`docs/verda_deployment.md` §3 for the GPU selection table. Batch/chunk parameters
-scale automatically; model architecture and checkpoint format are unchanged.
+If RTX Pro 6000 spot capacity is unavailable, the B200 (192 GB HBM3e, ~€1.80/hr)
+or B300 (262 GB HBM3e, ~€2.45/hr) data-centre Blackwell GPUs are the documented
+fallbacks — see §9.5 and `docs/verda_deployment.md` §3 for the full GPU selection
+table. Batch/chunk parameters scale automatically; model architecture and checkpoint
+format are unchanged.
 
 ---
 
@@ -469,25 +470,31 @@ Concurrent autotuning on first run is safe — Triton uses file-level locking [4
 After the first fold on either GPU has compiled, subsequent folds on both GPUs
 reuse the cached kernels.
 
-### 9.5 VRAM-adaptive parameter scaling (B300 fallback)
+### 9.5 VRAM-adaptive parameter scaling (B200/B300 fallback)
 
-When the RTX Pro 6000 Blackwell (spot) is unavailable, the B300 data-centre Blackwell
-(sm_10x, 262 GB HBM3e, ~€2.45/hr) is the recommended fallback. `run_cross_scale_level4_cuda.sh`
-detects VRAM at startup and scales batch/chunk sizes automatically:
+When RTX Pro 6000 spot capacity is unavailable, the B200 (192 GB HBM3e, ~€1.80/hr)
+or B300 (262 GB HBM3e, ~€2.45/hr) data-centre Blackwell GPUs are the documented
+fallbacks. `run_cross_scale_level4_cuda.sh` detects VRAM at startup and scales
+batch/chunk sizes automatically:
 
-| Parameter | RTX Pro 6000 (96 GB) | B300 (262 GB) | Scale factor |
-|---|---|---|---|
-| `ATTN_BATCH_NODES` | 1024 | 4096 | 4× |
-| `DECODER_CHUNK_T` | 24 | 64 | 2.7× |
-| `CFWRINKLE_FINE_LOSS_CHUNK_ELEMS` | 2048 | 8192 | 4× |
-| `hidden_dim` | 96 | 96 | unchanged |
-| `MAX_TIMESTEPS` | 128 | 128 | unchanged |
-| `AMP_DTYPE` | bfloat16 | bfloat16 | unchanged |
+| Parameter | RTX Pro 6000 (96 GB) | B200 (192 GB) | B300 (262 GB) | Scale factor |
+|---|---|---|---|---|
+| `ATTN_BATCH_NODES` | 1024 | 4096 | 4096 | 4× |
+| `DECODER_CHUNK_T` | 24 | 64 | 64 | 2.7× |
+| `CFWRINKLE_FINE_LOSS_CHUNK_ELEMS` | 2048 | 8192 | 8192 | 4× |
+| `hidden_dim` | 96 | 96 | 96 | unchanged |
+| `MAX_TIMESTEPS` | 128 | 128 | 128 | unchanged |
+| `AMP_DTYPE` | bfloat16 | bfloat16 | bfloat16 | unchanged |
 
 Detection is VRAM-threshold based (not compute capability):
 - VRAM ≥ 200 GB → B300 tier
+- VRAM ≥ 160 GB → B200 tier (same large params as B300)
 - VRAM ≥ 80 GB → RTX Pro 6000 tier
 - VRAM < 80 GB → conservative fallback (ATTN=512, CHUNK_T=12)
+
+The 160 GB threshold sits cleanly between B200 (192 GB) and RTX Pro 6000 (96 GB),
+leaving ample margin for firmware-reported values that may differ slightly from
+nominal specs.
 
 Any auto-scaled value can be overridden by exporting the env var before calling the
 script (e.g. `ATTN_BATCH_NODES=2048 bash run_cross_scale_level4_cuda.sh`). The
@@ -495,25 +502,32 @@ script (e.g. `ATTN_BATCH_NODES=2048 bash run_cross_scale_level4_cuda.sh`). The
 auto-scaling is skipped only for those that were explicitly set.
 
 **Checkpoint compatibility:** batch/chunk sizes are runtime performance parameters and
-are not serialised into checkpoint files. Resuming a B300-trained checkpoint on an
-RTX Pro 6000 (or vice versa) requires no flags beyond `--allow-resume-mismatch`, which
-`AUTO_RESUME` already passes. The model weights, optimizer state, and epoch counter are
-fully portable across GPU types.
+are not serialised into checkpoint files. Resuming across any GPU type requires no
+flags beyond `--allow-resume-mismatch`, which `AUTO_RESUME` already passes. The model
+weights, optimizer state, and epoch counter are fully portable.
 
-**B300 parallel fold execution:** The script automatically launches two processes on the
-same physical device (`CUDA_VISIBLE_DEVICES=0` for both), identical to the dual-RTX
-fold split (folds 0,2,4 ∥ folds 1,3). CUDA allows multiple process contexts on one
-device; the driver multiplexes SM access. Fold directories are disjoint so there are
-no write conflicts. Expected wall-clock: ~6–9 hr (same ~1.67× speedup as 2× RTX Pro 6000).
+**B200/B300 parallel fold execution:** When a single large-VRAM GPU is detected
+(`_B300_PARALLEL=1`), the script automatically launches two processes on the same
+physical device (`CUDA_VISIBLE_DEVICES=0` for both), identical to the dual-RTX fold
+split (folds 0,2,4 ∥ folds 1,3). CUDA allows multiple process contexts on one device;
+the driver multiplexes SM access. Fold directories are disjoint so there are no write
+conflicts. Expected wall-clock: ~6–9 hr (~1.67× speedup vs sequential).
 
-Estimated concurrent VRAM: ~50–65 GB × 2 processes = ~100–130 GB out of 262 GB.
-If both processes peak simultaneously at their worst case (~80 GB each = 160 GB /
-262 GB = 61%), the CUDA allocator's `garbage_collection_threshold:0.9` will not
-trigger GC until 90% full — ample headroom. Set `B300_PARALLEL=0` to disable and
-fall back to sequential `--all-folds` if OOM or debugging single-fold behaviour.
+Estimated concurrent VRAM per GPU:
+- B200 (192 GB): ~50–65 GB × 2 = ~100–130 GB / 192 GB (52–68% utilisation)
+- B300 (262 GB): ~50–65 GB × 2 = ~100–130 GB / 262 GB (38–50% utilisation)
 
-**Cost note:** At €2.45/hr vs €0.59/hr, a full 10-hr B300 run costs ~€25 vs ~€6.
-Use the B300 only when RTX Pro 6000 spot capacity is genuinely unavailable.
+The CUDA allocator's `garbage_collection_threshold:0.9` will not trigger GC until
+90% full — ample headroom on both. Set `B300_PARALLEL=0` to disable and fall back to
+sequential `--all-folds` if OOM or debugging single-fold behaviour.
+
+**2× B200:** Two physical B200 GPUs (`N_GPUS=2`) use the dual-GPU branch — each
+process has an entire 192 GB to itself — so `B300_PARALLEL` is irrelevant. This
+gives the same fold split as 2× RTX Pro 6000 but with large-VRAM params.
+
+**Cost note:** A full 10-hr run costs approximately €6 (1× RTX Pro 6000), €18
+(1× B200), €25 (1× B300), or €36 (2× B200). Prefer RTX Pro 6000 spot; use
+B200/B300 only when spot capacity is genuinely unavailable.
 
 ---
 

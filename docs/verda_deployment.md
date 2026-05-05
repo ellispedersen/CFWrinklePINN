@@ -13,7 +13,7 @@
 | 0 — Infrastructure | Verda console only | 5 min | €0 |
 | 1 — WP3 CPU rebuild | CPU instance (any), FIN-03 | 3–4 hr | < €0.50 |
 | 2 — Build + push image | Local Docker | 20–30 min | €0 |
-| 3 — GPU training | RTX Pro 6000 spot (or B300 fallback), FIN-03 | ~10 hr | ~€6 (RTX) / ~€25 (B300) |
+| 3 — GPU training | RTX Pro 6000 spot (or B200/B300 fallback), FIN-03 | ~10 hr | ~€6 (RTX) / ~€18 (B200) / ~€25 (B300) |
 | NVMe volume (2 weeks) | — | — | ~€5 |
 
 Scripts involved:
@@ -42,23 +42,23 @@ git push
 
 This ensures the CPU instance clones the correct code including `reports/input_param_registry.json` (now unblocked from `.gitignore`).
 
-### 2. Replace `REPLACE_PROJECT` in both scripts
-
-Open `scripts/verda_gpu_setup.sh` and `scripts/verda_launch_training.sh` and replace every `REPLACE_PROJECT` with your Verda project ID (visible in the Verda console URL: `console.verda.ai/projects/<ID>`).
-
-### 3. Build and push the Docker image
+### 2. Build and push the Docker image
 
 ```bash
-# Build locally (requires ~20 GB free disk)
-docker build -t vccr.io/<PROJECT_ID>/cfwrinkle-train:pt2110 .
+# Build locally with a local tag (requires ~20 GB free disk)
+docker build -t cfwrinkle-train:pt2110 .
+
+# Tag for Verda container registry
+docker tag cfwrinkle-train:pt2110 \
+  vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e/cfwrinkle-train:pt2110
 
 # Log in to Verda container registry
-# Credentials: Verda console → Storage → Container Registry
-echo '<REGISTRY_SECRET>' | docker login vccr.io/<PROJECT_ID> \
-  -u 'vcr-<PROJECT_ID>+creds' --password-stdin
+docker login -u vcr-20175b95-1ac5-4808-89b0-b08dc612c71e+erjp-cred-1 \
+  -p fTSvVgcig4eA8T7S7TEFSc8nP3d3RnGn \
+  vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e
 
 # Push (~8 GB compressed; within 100 GB free tier)
-docker push vccr.io/<PROJECT_ID>/cfwrinkle-train:pt2110
+docker push vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e/cfwrinkle-train:pt2110
 ```
 
 Base image: `pytorch/pytorch:2.11.0-cuda13.0-cudnn9-runtime` — no NGC account required [1][2].
@@ -180,20 +180,22 @@ hyperparameters automatically — no flags or config changes needed when switchi
 |---|---|---|---|
 | RTX Pro 6000 Blackwell (primary) | 96 GB GDDR7 | ~€0.59/hr spot | ATTN=1024, CHUNK_T=24, FINE_LOSS=2048 |
 | RTX Pro 6000 × 2 (primary) | 2 × 96 GB | ~€1.18/hr spot | Dual-GPU fold split, ~1.67× speedup |
+| B200 data-centre Blackwell (fallback) | 192 GB HBM3e | ~€1.80/hr | ATTN=4096, CHUNK_T=64, FINE_LOSS=8192; **parallel fold mode auto-enabled** |
+| B200 × 2 (fallback) | 2 × 192 GB | ~€3.60/hr | Dual-GPU fold split + large params; ~1.67× speedup |
 | B300 data-centre Blackwell (fallback) | 262 GB HBM3e | ~€2.45/hr | ATTN=4096, CHUNK_T=64, FINE_LOSS=8192; **parallel fold mode auto-enabled** |
 
-> **B300 note:** When VRAM ≥ 200 GB is detected, the script (a) upgrades batch and chunk
-> sizes to fill the extra headroom, and (b) automatically runs two parallel fold processes
-> on the same device (folds 0,2,4 ∥ 1,3), giving the same ~1.67× speedup as 2× RTX Pro 6000.
-> `hidden_dim`, `T`, and model architecture are unchanged. Set `B300_PARALLEL=0` to force
-> sequential if debugging or if VRAM is unexpectedly tight. Override any auto-scaled value
-> via env vars (e.g. `ATTN_BATCH_NODES=2048`).
+> **B200/B300 note:** When VRAM ≥ 160 GB is detected (B200: ≥160 GB, B300: ≥200 GB), the
+> script (a) upgrades batch and chunk sizes to fill the extra headroom, and (b) automatically
+> runs two parallel fold processes on the same device (folds 0,2,4 ∥ 1,3), giving the same
+> ~1.67× speedup as 2× RTX Pro 6000. `hidden_dim`, `T`, and model architecture are unchanged.
+> Set `B300_PARALLEL=0` to force sequential if debugging or if VRAM is unexpectedly tight.
+> Override any auto-scaled value via env vars (e.g. `ATTN_BATCH_NODES=2048`).
 
 ### Launch a GPU spot instance
 
 - **OS image:** `ubuntu-24.04-cuda-13.0-open-docker`
   *(Ubuntu 24.04, CUDA 13.0, open kernel modules for sm_12x / sm_10x, Docker pre-installed)*
-- **GPU:** RTX Pro 6000 Blackwell (spot), FIN-03 — 1 or 2 units; or 1× B300 as fallback
+- **GPU:** RTX Pro 6000 Blackwell (spot), FIN-03 — 1 or 2 units; or 1–2× B200 / 1× B300 as fallback
 - **`on_spot_discontinue`:** `keep_detached` ← **set this at creation**
 - **Storage:** Attach `cfwrinkle-data` volume
 - **Startup script:** Paste `scripts/verda_gpu_setup.sh`
@@ -260,7 +262,7 @@ Expected timeline:
 ## Resume After Spot Eviction
 
 1. Volume retained automatically (`keep_detached`).
-2. In Verda console: create a new instance, attach `cfwrinkle-data`. Use any available RTX Pro 6000 count — 1 or 2.
+2. In Verda console: create a new instance, attach `cfwrinkle-data`. Use any available GPU type — RTX Pro 6000 (1 or 2), B200 (1 or 2), or B300 (1).
 3. Run `scripts/verda_gpu_setup.sh` (pulls image, smoke test reports GPU count).
 4. Run `scripts/verda_launch_training.sh` — `AUTO_RESUME=1` scans `fold_0/` through `fold_4/` for any `latest.pt` and activates `--resume --allow-resume-mismatch`.
 5. Maximum work lost per eviction: 1 epoch (~5–8 min), because `latest.pt` is written atomically after every epoch [5].
@@ -275,8 +277,13 @@ flags or config changes needed:
 | 2 GPUs | 1 GPU available | `--all-folds --resume`. Completed folds finish in < 1 min. |
 | 1 GPU | 2 GPUs available | Dual-GPU split; already-complete folds resume in < 1 min each. |
 | 2 GPUs | 2 GPUs available | Dual-GPU split as before; resumes each fold subset from checkpoint. |
-| RTX Pro 6000 (any) | B300 | B300 parallel mode (2 procs, same device). AUTO_RESUME detects all fold checkpoints; ATTN/chunk auto-scaled up. Model weights compatible. |
-| B300 | RTX Pro 6000 | `--all-folds --resume` (1 GPU sequential) or dual-GPU split if 2× available. ATTN/chunk auto-scaled down to 96 GB defaults. |
+| RTX Pro 6000 (any) | B200 (1×) | B200 parallel mode (2 procs, same device). ATTN/chunk auto-scaled up. Model weights compatible. |
+| RTX Pro 6000 (any) | B200 (2×) | Dual-GPU split + large params. ATTN/chunk auto-scaled up. Model weights compatible. |
+| RTX Pro 6000 (any) | B300 | B300 parallel mode (2 procs, same device). ATTN/chunk auto-scaled up. Model weights compatible. |
+| B200 / B300 | RTX Pro 6000 | `--all-folds --resume` (1 GPU sequential) or dual-GPU split if 2× available. ATTN/chunk auto-scaled down to 96 GB defaults. |
+| B200 (1×) | B300 | B300 parallel mode. ATTN/chunk unchanged (both use same large defaults). AUTO_RESUME picks up all fold checkpoints. |
+| B300 | B200 (1×) | B200 parallel mode. ATTN/chunk unchanged. AUTO_RESUME picks up all fold checkpoints. |
+| B200 (1×) | B200 (2×) | Switches to dual-GPU split. AUTO_RESUME resumes all fold checkpoints. |
 
 The resume scan covers all five fold directories (`fold_0` through `fold_4`), so
 partial progress from either GPU in a prior 2-GPU run is detected even if `fold_0`

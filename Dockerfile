@@ -17,10 +17,10 @@
 FROM pytorch/pytorch:2.11.0-cuda13.0-cudnn9-runtime
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends git && \
+    apt-get install -y --no-install-recommends git python3.12-venv && \
     rm -rf /var/lib/apt/lists/*
 
-# Venv inherits torch from conda's site-packages via --system-site-packages.
+# Venv inherits torch from /usr/local/lib/python3.12/dist-packages via --system-site-packages.
 # run_cross_scale_level4_cuda.sh sources VENV_PATH/bin/activate (default /workspace/venv).
 RUN python3 -m venv /workspace/venv --system-site-packages && \
     /workspace/venv/bin/pip install --no-cache-dir \

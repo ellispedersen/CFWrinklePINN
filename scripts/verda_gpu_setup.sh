@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verda GPU instance setup — RTX Pro 6000 Blackwell.
+# Verda GPU instance setup — RTX Pro 6000 / B200 / B300 Blackwell.
 #
 # Runs on ubuntu-24.04-cuda-13.0-open-docker after attaching the cfwrinkle-data
 # NVMe volume (already formatted and populated by verda_cpu_rebuild.sh).
@@ -16,11 +16,11 @@ set -euo pipefail
 
 VOLUME_DEVICE="${VOLUME_DEVICE:-}"
 MOUNT_POINT="${MOUNT_POINT:-/mnt/data}"
-IMAGE="${IMAGE:-vccr.io/REPLACE_PROJECT/cfwrinkle-train:pt2110}"
-REGISTRY_USER="${REGISTRY_USER:-vcr-REPLACE_PROJECT+creds}"
+IMAGE="${IMAGE:-vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e/cfwrinkle-train:pt2110}"
+REGISTRY_USER="${REGISTRY_USER:-vcr-20175b95-1ac5-4808-89b0-b08dc612c71e+erjp-cred-1}"
 REGISTRY_SECRET="${REGISTRY_SECRET:-}"   # set via env or paste when prompted
 
-echo "=== Verda GPU setup (RTX Pro 6000 Blackwell) ==="
+echo "=== Verda GPU setup (RTX Pro 6000 / B200 / B300 Blackwell) ==="
 echo "Image:  $IMAGE"
 echo "Mount:  $MOUNT_POINT"
 echo ""
@@ -92,9 +92,12 @@ for gpu_idx in range(n_gpus):
 
     print(f"\n  --- GPU {gpu_idx} ---")
     vram_gb = props.total_memory / 1024**3
-    # Tier by VRAM: B300 ≥ 200 GB HBM3e; RTX Pro 6000 ≥ 80 GB GDDR7.
+    # Tier by VRAM: B300 ≥ 200 GB; B200 ≥ 160 GB; RTX Pro 6000 ≥ 80 GB GDDR7.
     if vram_gb >= 200:
         gpu_tier = "B300"
+        matmul_threshold_ms = 3.0
+    elif vram_gb >= 160:
+        gpu_tier = "B200"
         matmul_threshold_ms = 3.0
     elif vram_gb >= 80:
         gpu_tier = "RTX-Pro-6000"
@@ -135,7 +138,7 @@ for gpu_idx in range(n_gpus):
     except Exception as e:
         print(f"  SDPA Flash: {e} (will fall back to efficient/math kernel)")
 
-    # BF16 matmul timing — RTX Pro 6000 < 5 ms; B300 < 3 ms.
+    # BF16 matmul timing — RTX Pro 6000 < 5 ms; B200/B300 < 3 ms.
     a = torch.randn(4096, 4096, device=dev, dtype=torch.bfloat16)
     torch.cuda.synchronize(dev)
     t0 = time.time()

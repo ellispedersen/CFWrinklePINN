@@ -1,0 +1,35 @@
+# Large data files — live on the NVMe volume at runtime, not in the image
+data/
+*.h5
+*.hdf5
+
+# Local Python environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Checkpoints and run outputs
+checkpoints/
+logs/
+runs/
+.triton_cache/
+
+# Reports (regenerated at runtime)
+reports/*.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Git history (not needed in image)
+.git/
+
+# WSL-specific scripts (not needed in container)
+wsl_*.sh

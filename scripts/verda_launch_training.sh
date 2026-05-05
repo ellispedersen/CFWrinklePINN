@@ -17,7 +17,7 @@
 #
 set -euo pipefail
 
-IMAGE="${IMAGE:-vccr.io/REPLACE_PROJECT/cfwrinkle-train:pt2110}"
+IMAGE="${IMAGE:-vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e/cfwrinkle-train:pt2110}"
 VOLUME_ROOT="${VOLUME_ROOT:-/mnt/data}"
 
 # Verify volume is mounted and data is present before launching.

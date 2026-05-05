@@ -177,7 +177,8 @@ print(int(torch.cuda.get_device_properties(0).total_memory / 1024**3))
 [[ "$GPU_VRAM_GB" =~ ^[0-9]+$ ]] || GPU_VRAM_GB=0
 
 # Adaptive hyperparameters: scale batch/chunk sizes to fill available VRAM.
-#   RTX Pro 6000 (96 GB GDDR7): defaults already set above.
+#   RTX Pro 6000 (96 GB GDDR7):          defaults already set above.
+#   B200 data-centre Blackwell (192 GB HBM3e): same large params as B300.
 #   B300 data-centre Blackwell (262 GB HBM3e): 4× larger batches utilise the headroom.
 # Only overrides vars that were NOT explicitly exported by the caller.
 if [[ "$GPU_VRAM_GB" -ge 200 ]]; then
@@ -188,6 +189,14 @@ if [[ "$GPU_VRAM_GB" -ge 200 ]]; then
     # Parallel fold mode: 2 processes, both on CUDA_VISIBLE_DEVICES=0.
     # 262 GB HBM3e holds 2 concurrent processes (~50-65 GB each sustained).
     # Disable with B300_PARALLEL=0 if OOM or debugging single-fold.
+    _B300_PARALLEL=1
+    [[ "${B300_PARALLEL:-1}" == "0" ]] && _B300_PARALLEL=0
+elif [[ "$GPU_VRAM_GB" -ge 160 ]]; then
+    GPU_TIER="B200 (${GPU_VRAM_GB} GB HBM)"
+    [[ "$_USER_ATTN"      ]] || ATTN_BATCH_NODES=4096
+    [[ "$_USER_CHUNK_T"   ]] || DECODER_CHUNK_T=64
+    [[ "$_USER_FINE_LOSS" ]] || CFWRINKLE_FINE_LOSS_CHUNK_ELEMS=8192
+    # 192 GB HBM3e holds 2 concurrent processes (~50-65 GB each sustained).
     _B300_PARALLEL=1
     [[ "${B300_PARALLEL:-1}" == "0" ]] && _B300_PARALLEL=0
 elif [[ "$GPU_VRAM_GB" -ge 80 ]]; then
@@ -268,11 +277,11 @@ print(f"summary.json merged: {len(results)} folds")
 PYMERGE
 
 elif [[ "$_B300_PARALLEL" == "1" ]]; then
-  # ── B300 parallel mode ──────────────────────────────────────────────────────
-  # Both processes target CUDA_VISIBLE_DEVICES=0 (same physical B300 GPU).
+  # ── B200/B300 parallel mode ─────────────────────────────────────────────────
+  # Both processes target CUDA_VISIBLE_DEVICES=0 (same physical large-VRAM GPU).
   # CUDA allows multiple processes on one device; the driver multiplexes contexts.
   # Fold directories are disjoint (fold_0/2/4 vs fold_1/3) — no write conflicts.
-  echo "B300 parallel mode: 2 processes on cuda:0, folds 0,2,4 ∥ 1,3 (~1.67× speedup)" | tee -a "$LOG_PATH"
+  echo "${GPU_TIER} parallel mode: 2 processes on cuda:0, folds 0,2,4 ∥ 1,3 (~1.67× speedup)" | tee -a "$LOG_PATH"
   LOG_PROC0="${RUN_DIR}/run_proc0.log"
   LOG_PROC1="${RUN_DIR}/run_proc1.log"
 
