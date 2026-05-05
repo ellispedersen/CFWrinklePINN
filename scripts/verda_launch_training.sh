@@ -46,7 +46,6 @@ echo ""
 # compilation (10-20 min first run) is cached across spot evictions.
 
 docker run --rm --gpus all \
-  -v "$VOLUME_ROOT/repo:/workspace/repo" \
   -v "$VOLUME_ROOT:/workspace/data_vol" \
   -v "$VOLUME_ROOT/checkpoints:/workspace/checkpoints" \
   -v "$VOLUME_ROOT/logs:/workspace/logs" \

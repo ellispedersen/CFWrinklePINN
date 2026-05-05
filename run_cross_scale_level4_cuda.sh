@@ -162,7 +162,7 @@ fi
 # Gradient checkpointing: OFF when fine_mp is compiled (inductor fuses activations, ~56 GB est.).
 # Must be ON when fine_mp compile is disabled (@torch.compiler.disable) — uncompiled activations
 # are not fused and exceed 94 GB. Override with USE_GRAD_CHECKPOINT=1.
-if [[ "${USE_GRAD_CHECKPOINT:-0}" == "1" ]]; then
+if [[ "${USE_GRAD_CHECKPOINT:-1}" == "1" ]]; then
   CMD+=(--checkpoint)
 else
   CMD+=(--no-checkpoint)
