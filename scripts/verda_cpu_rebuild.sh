@@ -68,7 +68,7 @@ _CLONE_URL="${GITHUB_REPO/https:\/\//https:\/\/x-access-token:$GITHUB_TOKEN@}"
 
 if [[ -d "$REPO_DIR/.git" ]]; then
   echo "  Repo already cloned — pulling latest."
-  git -C "$REPO_DIR" pull --ff-only
+  GIT_TERMINAL_PROMPT=0 git -C "$REPO_DIR" pull --ff-only || echo "  Pull skipped (offline or up to date)."
 else
   git clone "$_CLONE_URL" "$REPO_DIR"
 fi
