@@ -130,23 +130,37 @@ The volume persists across instance terminations. It costs ~€0.20/GB/month (re
 
 ### Download WP2 from SharePoint
 
-**Option A — rclone (recommended for large files):**
+**Option A — rclone (recommended; works with university tenant restrictions):**
+
+The Verda instance has no browser, so use rclone's two-machine auth flow:
 
 ```bash
-# On the CPU instance:
+# ── Step 1: on your LOCAL Windows machine ──────────────────────────────────
+rclone authorize "onedrive"
+# Sign in with your University of Twente account in the browser that opens.
+# rclone prints a JSON token block — copy the entire thing.
+
+# ── Step 2: on the CPU instance (SSH) ─────────────────────────────────────
 curl https://rclone.org/install.sh | bash
+rclone config
+# → New remote → name: onedrive
+# → Storage type: Microsoft OneDrive
+# → client_id / client_secret: (leave blank, press Enter)
+# → Edit advanced config: No
+# → Use auto config? → No   ← Verda has no browser
+# → Paste the JSON token from Step 1 when prompted
+# → Drive type: OneDrive (business or personal)
+# → Confirm
 
-# Configure OneDrive backend (paste token from local machine):
-rclone config   # select 'onedrive' → 'Microsoft OneDrive' → authenticate
-
-# Download WP2:
+# ── Step 3: download ───────────────────────────────────────────────────────
 rclone copy "onedrive:CFWrinkle/cfwrinkle_dataset.h5" /mnt/data/ --progress
 ```
 
-**Option B — SharePoint sharing link:**
+**Option B — SharePoint sharing link (requires "Anyone with link" permission):**
 
 ```bash
-# Generate: SharePoint → right-click file → Share → Anyone with link → Copy link
+# Only works if your tenant allows anonymous sharing links.
+# University of Twente restricts this — use Option A (rclone) instead.
 curl -L -o /mnt/data/cfwrinkle_dataset.h5 'https://univ.sharepoint.com/:u:/s/...'
 ```
 
