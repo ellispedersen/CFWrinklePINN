@@ -15,7 +15,7 @@
 set -euo pipefail
 
 VOLUME_DEVICE="${VOLUME_DEVICE:-}"
-MOUNT_POINT="${MOUNT_POINT:-/mnt/data}"
+MOUNT_POINT="${MOUNT_POINT:-/mnt/cfwrinkle-data}"
 IMAGE="${IMAGE:-vccr.io/20175b95-1ac5-4808-89b0-b08dc612c71e/cfwrinkle-train:pt2110}"
 REGISTRY_USER="${REGISTRY_USER:-vcr-20175b95-1ac5-4808-89b0-b08dc612c71e+erjp-cred-1}"
 REGISTRY_SECRET="${REGISTRY_SECRET:-fTSvVgcig4eA8T7S7TEFSc8nP3d3RnGn}"

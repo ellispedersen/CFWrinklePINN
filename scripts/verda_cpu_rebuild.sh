@@ -21,7 +21,7 @@ set -euo pipefail
 
 # ── USER CONFIG — edit these two lines only ───────────────────────────────────
 GITHUB_TOKEN="github_pat_REPLACE_ME"   # fine-grained PAT with Contents read access
-MOUNT_POINT="/mnt/data"          # match the mount path set in the Verda UI
+MOUNT_POINT="/mnt/cfwrinkle-data" # match the mount path set in the Verda UI
 # ─────────────────────────────────────────────────────────────────────────────
 
 GITHUB_REPO="https://github.com/ellispedersen/CFWrinklePINN"
